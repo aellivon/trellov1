@@ -11,7 +11,7 @@ from rest_framework import serializers
 
 from  users.models import User
 
-from .models import Board, Referral, BoardMember
+from .models import Board, Column, Referral, BoardMember
 from .mixins import ArchiveMemberMixIn
 
 
@@ -166,6 +166,7 @@ class ListOfMembers(serializers.ModelSerializer):
 class ReferralValidationSerializer(serializers.ModelSerializer):
 
     has_account = serializers.SerializerMethodField()
+
     class Meta:
         model = Referral
         fields = ('id', 'has_account')
@@ -174,3 +175,48 @@ class ReferralValidationSerializer(serializers.ModelSerializer):
         return bool(obj.board_member.user)
 
 
+class ColumnSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Column
+        fields = ('position', 'name')
+
+
+class CreateColumnSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Column
+        fields = ('name', 'board')
+
+
+class UpdateColumnNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Column
+        fields= ('name', 'id' , 'board')
+
+
+class UpdatePositionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Column
+        fields = ('position', 'id' , 'board')
+
+
+class ArchiveColumnSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Column
+        fields = ('is_active', 'id' , 'board')
+
+
+class ColumnDetailSerializer(serializers.ModelSerializer):
+
+    number_of_cards = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Column
+        fields = ('name', 'position','number_of_cards')
+
+    def get_number_of_cards(self, obj):
+        return obj.count()

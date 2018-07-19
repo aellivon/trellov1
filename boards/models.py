@@ -1,6 +1,8 @@
 from django.db import models
-from secrets import token_urlsafe 
+from django.db.models import Max
+
 from trello.models import CommonInfo
+from secrets import token_urlsafe 
 from users.models import User
 # from activity.models import Activity
 # from django.contrib.contenttypes.fields import GenericRelation
@@ -55,6 +57,29 @@ class Column(CommonInfo):
     board = models.ForeignKey(Board, on_delete=models.CASCADE)
     name = models.TextField()
     position = models.IntegerField(default=0)
+
+    def increment_position(self):
+        max_position=Column.objects.filter(is_active=True).aggregate(Max('position'))
+        to_add_position= 1
+        maximum_exists = max_position.get('position__max')
+        if maximum_exists:
+            to_add_position = to_add_position + maximum_exists
+        return to_add_position
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        # Adding position
+        if not self.id:
+            to_add_position = self.increment_position()
+            print (to_add_position)
+            self.position = to_add_position
+
+        return super(Column,self).save(force_insert, force_update, using,
+             update_fields)
+
+    def count(self):
+        return Card.active_objects.filter(column__id=self.pk).count()
+
 
 
 class Card(CommonInfo):

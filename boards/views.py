@@ -8,11 +8,12 @@ from rest_framework.response import Response
 
 from users.models import User
 
-from .models import Board, BoardMember, Referral
+from .models import Board, BoardMember, Column, Referral
 from .permissions import BoardMemberPermission
 from .serializers import( 
-    ArchiveMembers, BoardNameSerializer, CreateBoardSerializer, GetJoinedBoards, ListOfMembers,
-    InviteMemberSerializer, ReferralValidationSerializer, UpdateBoardStatusSerializer)
+    ArchiveMembers, ArchiveColumnSerializer, BoardNameSerializer, CreateBoardSerializer, GetJoinedBoards, ColumnSerializer,
+    CreateColumnSerializer,ColumnDetailSerializer , ListOfMembers, InviteMemberSerializer, ReferralValidationSerializer,
+    UpdateBoardStatusSerializer, UpdateColumnNameSerializer, UpdatePositionSerializer)
 
 
 class HomeViewSet(ViewSet):
@@ -24,9 +25,9 @@ class HomeViewSet(ViewSet):
         """
             get list of boards
         """
-        board_member = BoardMember.active_objects.filter(
+        board_members = BoardMember.active_objects.filter(
             user=self.request.user, board__is_active=True, is_confirmed=True)
-        serializer = GetJoinedBoards(board_member, many=True)
+        serializer = GetJoinedBoards(board_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create_board(self, *args, **kwargs):
@@ -95,8 +96,8 @@ class BoardMemberViewSet(ViewSet):
             get list of members
         """
         board_id = self.kwargs.get('board_id')
-        board_member = BoardMember.active_objects.filter(board__id=board_id)
-        serializer = ListOfMembers(board_member, many=True)
+        board_members = BoardMember.active_objects.filter(board__id=board_id)
+        serializer = ListOfMembers(board_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def invite_member(self, *args, **kwargs):
@@ -118,6 +119,9 @@ class BoardMemberViewSet(ViewSet):
 
 
 class UserValidationViewSet(ViewSet):
+    """
+        User validation view set
+    """
 
     def display_user_validation(self, *args, **kwargs):
         # WIP
@@ -126,3 +130,53 @@ class UserValidationViewSet(ViewSet):
         serializer= ReferralValidationSerializer(referral)
         return Response(serializer.data, status=status.HTTP_200_OK)
        
+
+class ColumnViewSet(ViewSet):
+    """
+        Column view set
+    """
+
+    def list_of_column_in_board(self, *args, **kwargs):
+        board_id= self.kwargs.get('board_id')
+        board_columns = Column.active_objects.filter(board__id=board_id, is_active=True)
+        serializer = ColumnSerializer(board_columns, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create_column(self, *args, **kwargs):
+        serializer=CreateColumnSerializer(data=self.request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data,status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def update_column(self, *args, **kwargs):
+        column = get_object_or_404(Column, pk=self.request.data.get('id', None))
+        if self.request.data['action'] == "update":
+            serializer = UpdateColumnNameSerializer(instance=column, data=self.request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif self.request.data['action'] == "transfer":
+            serializer = UpdatePositionSerializer(instance=column, data=self.request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        # Falls here if archived
+        serializer = ArchiveColumnSerializer(instance=column, data=self.request.data)
+        if serializer.is_valid():
+            serializer.save()
+            return Response(data=serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class ColumnDetailViewSet(ViewSet):
+
+    def get_column_detail(self, *args, **kwargs):
+        column_id=self.kwargs.get('column_id')
+        column = get_object_or_404(Column, pk=column_id)
+        serializer = ColumnDetailSerializer(column)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
