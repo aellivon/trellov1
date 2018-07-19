@@ -1,4 +1,3 @@
-
 from activities.constants import ACTIVITY_ACTION
 
 from annoying.functions import get_object_or_None

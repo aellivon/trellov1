@@ -9,10 +9,10 @@ from rest_framework_jwt.views import obtain_jwt_token
 
 
 urlpatterns = [
-    path('users/', include('users.urls')),
+    path('', include('users.urls')),
     path('', include('boards.urls')),
     path('admin/', admin.site.urls),
-    path('api-token-auth/', obtain_jwt_token)
+    path('login/', obtain_jwt_token)
 ] 
 
 

@@ -9,6 +9,7 @@ from rest_framework.response import Response
 from users.models import User
 
 from .models import Board, BoardMember, Referral
+from .permissions import BoardMemberPermission
 from .serializers import( 
     ArchiveMember, ArchiveMembers, BoardNameSerializer, CreateBoardSerializer, GetJoinedBoards,
     InviteMemberSerializer, ReferralValidationSerializer, UpdateBoardStatusSerializer)
@@ -28,16 +29,6 @@ class BoardViews(ViewSet):
         serializer = GetJoinedBoards(board_member, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
-    def list_of_board_detail(self, *args, **kwargs):
-        """
-            display board details
-        """
-        board_id= self.kwargs.get('board_id')
-        board= get_object_or_404(Board, is_active=True, id=board_id)
-        serializer= BoardNameSerializer(board)
-        return Response(serializer.data, status=status.HTTP_200_OK)
-
-
     def create_board(self, *args, **kwargs):
         """
             creating board end point
@@ -48,6 +39,23 @@ class BoardViews(ViewSet):
             serializer.save()
             return Response(data=serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+class BoardActivityWithPermissions(ViewSet):
+    """
+        Board member with permissions
+    """
+    permission_classes = (IsAuthenticated, BoardMemberPermission)
+
+    def list_of_board_detail(self, *args, **kwargs):
+        """
+            display board details
+        """
+        board_id= self.kwargs.get('board_id')
+        board= get_object_or_404(Board, is_active=True, id=board_id)
+        serializer= BoardNameSerializer(board)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update_board_name(self, *args, **kwargs):
         """
@@ -79,7 +87,8 @@ class BoardMemberViews(ViewSet):
         Board member views
     """
 
-    permission_classes =(IsAuthenticated, )
+
+    permission_classes =(IsAuthenticated, BoardMemberPermission)
 
     def invite_member(self, *args, **kwargs):
         """
