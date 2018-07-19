@@ -11,11 +11,11 @@ from users.models import User
 from .models import Board, BoardMember, Referral
 from .permissions import BoardMemberPermission
 from .serializers import( 
-    ArchiveMember, ArchiveMembers, BoardNameSerializer, CreateBoardSerializer, GetJoinedBoards,
+    ArchiveMembers, BoardNameSerializer, CreateBoardSerializer, GetJoinedBoards, ListOfMembers,
     InviteMemberSerializer, ReferralValidationSerializer, UpdateBoardStatusSerializer)
 
 
-class BoardViews(ViewSet):
+class HomeViewSet(ViewSet):
     """Board Views"""
 
     permission_classes = (IsAuthenticated,)
@@ -42,7 +42,7 @@ class BoardViews(ViewSet):
 
 
 
-class BoardActivityWithPermissions(ViewSet):
+class SpecificBoardViewSet(ViewSet):
     """
         Board member with permissions
     """
@@ -82,13 +82,22 @@ class BoardActivityWithPermissions(ViewSet):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
-class BoardMemberViews(ViewSet):
+class BoardMemberViewSet(ViewSet):
     """
         Board member views
     """
 
 
     permission_classes =(IsAuthenticated, BoardMemberPermission)
+
+    def list_of_members(self, *args, **kwargs):
+        """
+            get list of members
+        """
+        board_id = self.kwargs.get('board_id')
+        board_member = BoardMember.active_objects.filter(board__id=board_id)
+        serializer = ListOfMembers(board_member, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def invite_member(self, *args, **kwargs):
         """
@@ -100,20 +109,15 @@ class BoardMemberViews(ViewSet):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-
-    def remove_member(self, *args, **kwargs):
-        serializer=ArchiveMember(data=self.request.data, context={"request": self.request})
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
     def remove_members(self, *args, **kwargs):
         serializer=ArchiveMembers(data=self.request.data, context={"request": self.request})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class UserValidationViewSet(ViewSet):
 
     def display_user_validation(self, *args, **kwargs):
         # WIP

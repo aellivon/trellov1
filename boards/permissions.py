@@ -12,7 +12,7 @@ class BoardMemberPermission(permissions.BasePermission):
 
     def has_permission(self, request, view):
         board_id = request.resolver_match.kwargs.get('board_id')
-        # Permission Denied if 404
+        # Permission Denied if returns false
         board_member = get_object_or_None(
             BoardMember, board__id=board_id, user__pk=request.user.id,
             is_active=True)

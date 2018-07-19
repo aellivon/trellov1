@@ -126,22 +126,6 @@ class InviteMemberSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'email': ['This user is already invited!']})
         return data
 
-class ArchiveMember(serializers.ModelSerializer, ArchiveMemberMixIn):
-    """
-        Serializer for archiving one member
-    """
-
-    email = serializers.EmailField()
-
-    class Meta:
-        model = BoardMember
-        fields = ('email', 'board')
-
-    def save(self):
-        to_remove_email= self.validated_data.get("email")
-        board= self.validated_data.get("board")
-        self.remove_member(to_remove_email, board)
-
 
 class ArchiveMembers(serializers.ModelSerializer, ArchiveMemberMixIn):
     """
@@ -160,6 +144,23 @@ class ArchiveMembers(serializers.ModelSerializer, ArchiveMemberMixIn):
         board= self.validated_data.get("board")
         for email in self.validated_data.get("bulk_email"):
             self.remove_member(email, board)
+
+
+class ListOfMembers(serializers.ModelSerializer):
+    """
+        List of members
+    """
+    member = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BoardMember
+        fields = ('member',)
+
+    def get_member(self, obj):
+        if obj.user:
+            return obj.user.email
+        referral = get_object_or_None(Referral, board_member__pk=obj.id)
+        return referral.email + " (Pending)"
 
 
 class ReferralValidationSerializer(serializers.ModelSerializer):
