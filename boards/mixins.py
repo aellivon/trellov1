@@ -23,3 +23,11 @@ class ArchiveMemberMixIn():
             if board_member:
                 board_member.is_active = False
                 board_member.save()
+
+
+class GetBoardMixIn():
+
+    def get_board():
+        board_id= self.kwargs.get('board_id')
+        board = get_object_or_404(Board, pk=board_id)
+        return board

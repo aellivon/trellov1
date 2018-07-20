@@ -11,7 +11,7 @@ from rest_framework import serializers
 
 from  users.models import User
 
-from .models import Board, Column, Referral, BoardMember
+from .models import Board, Card, Column, Referral, BoardMember, CardMember, CardComment
 from .mixins import ArchiveMemberMixIn
 
 
@@ -24,7 +24,7 @@ class CreateBoardSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Board
-        fields = '__all__'
+        fields = ('name', 'owner')
 
     def validate(self, data):
         """
@@ -32,6 +32,8 @@ class CreateBoardSerializer(serializers.ModelSerializer):
         """
         data['owner'] = self.context.get('request').user
         return super(CreateBoardSerializer, self).validate(data)
+
+
 
 
 class BoardNameSerializer(serializers.ModelSerializer):
@@ -101,6 +103,7 @@ class InviteMemberSerializer(serializers.ModelSerializer):
 
         # Passing in the instance so that the board member signal can save the board
         new_referral.board = board
+        new_referral.inviter = inviter
 
         # Gets if the email has a user
         user = get_object_or_None(User, email=self.validated_data.get("email"))
@@ -220,3 +223,118 @@ class ColumnDetailSerializer(serializers.ModelSerializer):
 
     def get_number_of_cards(self, obj):
         return obj.count()
+
+
+class ListCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('id' , 'name')
+
+
+class CreateCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('name', 'column')
+
+
+class UpdateCardNameSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('name', 'id')
+
+
+class UpdateCardDescriptionSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('description', 'id')
+
+
+class UpdateCardDueDateSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('due_date', 'id')
+
+
+class TransferCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('position', 'id', 'column')
+
+
+class ArchiveCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('id' , 'is_active')
+
+
+class CardMemberSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField(source='board_member.user.email')
+    board_member_id = serializers.IntegerField(source='board_member.user.id')
+
+    class Meta:
+        model = CardMember
+        fields = ('email','board_member_id')
+
+
+class CreateCardMemberSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CardMember
+        fields = ('card', 'board_member')
+
+    def validate(self, data):
+        exists = CardMember.active_objects.filter(board_member=data["board_member"], card=data["card"])
+        if exists:
+            # Something went wrong in handling the data from the front end
+            raise serializers.ValidationError("This board member is already assigned!")
+
+
+class ArchiveCardMemberSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        model = CardMember
+        fields = ('is_active', 'board_member')
+
+
+
+class CardCommentSerializer(serializers.ModelSerializer):
+
+    email = serializers.EmailField(source='user.email')
+
+    class Meta:
+        model = CardComment
+        fields = ('comment', 'email', 'date_commented', 'id')
+
+
+class AddCommentSerializer(serializers.ModelSerializer):
+
+    user = serializers.PrimaryKeyRelatedField(required=False, queryset=get_user_model().objects.all())
+
+    class Meta:
+        model = CardComment
+        fields =  ('comment', 'user', 'card')
+
+    def validate(self, data):
+        """
+            putting owner since we didn't pass owner on the first initalization of data
+        """
+        data['user'] = self.context.get('request').user
+        return super(AddCommentSerializer, self).validate(data)
+
+
+class ArchiveCardMemberSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = CardMember
+        fields = ('is_active', 'id')
+
+
