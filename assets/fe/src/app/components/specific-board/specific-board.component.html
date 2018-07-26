@@ -1,0 +1,47 @@
+<div class="modal fade" id="updateBoardName" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Update Board Name</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form [formGroup]="form" (ngSubmit)="updateBoardName()">
+        <div class="modal-body">
+          <label class="label-margin mt-1">Name</label>
+          <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+        </div>
+        <div class="modal-footer">
+          <button type="submit" class="btn btn-primary">Update Board</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+<div class="container-fluid">
+  <div class="pl-3 row custom-row">
+    <div class="mt-2 col-lg-8">
+      <h3 [ngModel]="current_name" ngDefaultControl>
+                {{current_name}}
+        </h3>
+    </div>
+    <div class="mt-2 d-flex justify-content-end col-lg-4">
+      <button class="btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal">Board Stream</button>
+      <div class="dropdown text-right dropdown-right">
+        <a class="btn btn-primary dropdown-toggle ml-2" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+          <a class="dropdown-item" data-toggle="modal" data-target="#AddMemberModal">Invite Member</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#RemoveMemberModal">Remove Member </a>
+        </div>
+      </div>
+      <div class="dropdown text-right  ml-2">
+        <a class="btn btn-primary dropdown-toggle text-right " href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
+          <a class="dropdown-item" data-toggle="modal" data-target="#updateBoardName">Update Board</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#ArchiveBoardModal">Archive Board</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

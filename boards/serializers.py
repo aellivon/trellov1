@@ -50,9 +50,10 @@ class GetJoinedBoards(serializers.ModelSerializer):
         getting joined boards
     """
     board_name = serializers.CharField(source='board.name')
+    board_id = serializers.IntegerField(source='board.id')
     class Meta:
         model = Board
-        fields = ('id', 'board_name')
+        fields = ('board_id', 'board_name')
 
 class UpdateBoardStatusSerializer(serializers.ModelSerializer):
     """

@@ -9,5 +9,5 @@ user_sign_up =  UserViews.as_view({
 app_name = 'users'
 
 urlpatterns = [
-    path('signup/', user_sign_up, name='signup'),
+    path('api/signup/', user_sign_up, name='signup'),
 ]

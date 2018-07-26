@@ -1,0 +1,37 @@
+
+.box-board{
+    background-color: #cccccc;
+    min-width: 250px;
+    min-height: 250px;
+    margin-top: 20px;
+}
+
+
+.box-existing-board{
+    background-color: #323232;
+    min-width: 250px;
+    min-height: 250px;
+    margin-top: 20px;
+}
+
+.box-board:hover{
+    background-color: #026aa7;
+    min-width: 250px;
+    min-height: 250px;
+}
+
+
+.create-new-board{
+    margin-top:100px;
+    color:black;
+}
+
+.existing-new-board{
+    color: white;
+    margin-top: 100px;
+}
+
+.box-board:hover .create-new-board{
+    color: white;
+}
+

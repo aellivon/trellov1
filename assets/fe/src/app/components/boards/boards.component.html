@@ -1,0 +1,26 @@
+<div class="d-flex justify-content-around flex-wrap pb-3">
+  <div class=" box-board btn-info btn " (click)="openCreateModal(create_modal)">
+    <p class="create-new-board"> Create New Board </p>
+  </div>
+  <div *ngFor="let board of boards" uiSref="board_state" [uiParams]="{ board_id: board.board_id }" class="box-existing-board box-board btn">
+    <p class="existing-new-board"> {{board.board_name}} </p>
+  </div>
+</div>
+
+<ng-template #create_modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Create New Board</h5>
+    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="form" (ngSubmit)="createBoard()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Name</label>
+      <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Create Board</button>
+    </div>
+  </form>
+</ng-template>
