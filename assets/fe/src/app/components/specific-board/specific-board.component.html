@@ -1,24 +1,3 @@
-<div class="modal fade" id="updateBoardName" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-  <div class="modal-dialog" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="exampleModalLabel">Update Board Name</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <form [formGroup]="form" (ngSubmit)="updateBoardName()">
-        <div class="modal-body">
-          <label class="label-margin mt-1">Name</label>
-          <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Update Board</button>
-        </div>
-      </form>
-    </div>
-  </div>
-</div>
 <div class="container-fluid">
   <div class="pl-3 row custom-row">
     <div class="mt-2 col-lg-8">
@@ -31,16 +10,132 @@
       <div class="dropdown text-right dropdown-right">
         <a class="btn btn-primary dropdown-toggle ml-2" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" data-toggle="modal" data-target="#AddMemberModal">Invite Member</a>
-          <a class="dropdown-item" data-toggle="modal" data-target="#RemoveMemberModal">Remove Member </a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#AddMemberModal" (click)="openModal(invite_member)">Invite Member</a>
+          <a *ngIf="members" class="dropdown-item" (click)="getMembers(remove_member)" data-toggle="modal" data-target="#RemoveMemberModal">Remove Member </a>
         </div>
       </div>
       <div class="dropdown text-right  ml-2">
         <a class="btn btn-primary dropdown-toggle text-right " href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" data-toggle="modal" data-target="#updateBoardName">Update Board</a>
-          <a class="dropdown-item" data-toggle="modal" data-target="#ArchiveBoardModal">Archive Board</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#updateBoardName" (click)="openModal(update_name_modal)">Update Board</a>
+          <a class="dropdown-item" data-toggle="modal" data-target="#ArchiveBoardModal" (click)="openModal(archive_board)">Archive Board</a>
         </div>
+      </div>
+    </div>
+  </div>
+</div>
+<ng-template #update_name_modal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Update Board Name</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="boardGroup" (ngSubmit)="updateBoardName()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Name</label>
+      <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+      <div *ngIf="boardNameFieldErrors" class="alert-danger alert">
+        {{boardNameFieldErrors}}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Update Board Name</button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #archive_board>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Archive Board</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="boardGroup" (ngSubmit)="archiveBoard()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Are you sure you want to archive this board?</label>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Yes</button>
+      <button type="button" class="btn btn-primary" (click)="closeModal()">No</button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #invite_member>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Invite Member</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="boardMemberGroup" (ngSubmit)="inviteMember()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Email</label>
+      <input formControlName="email" name="email" class="form-control d-inline-block mb-2">
+      <div *ngIf="emailInviteFieldErrors" class="alert-danger alert">
+        {{emailInviteFieldErrors}}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Invite</button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #remove_member>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Remove Members</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body overflow-auto">
+    <div *ngIf="removalError" class="alert-danger alert">
+      {{removalError}}
+    </div>
+    <div *ngFor="let member of members" class="members row">
+      <input *ngIf="member.id" class="mt-1 ml-3" [(ngModel)]="member.Checked" name="remove_member" type="checkbox" value="">
+      <p class="m-0 ml-1 p-0"> {{member.member}} </p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="showConfirmationRemovalModal()" class="btn btn-primary">Remove</button>
+  </div>
+</ng-template>
+
+<div *ngIf="show_successful_message" [config]="{ show: true }" (onHidden)="onSuccessHidden()" bsModal #successfulMessageModal="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-auto-name">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-auto-name" class="modal-title pull-left">Success</h4>
+        <button type="button" class="close pull-right" aria-label="Close" (click)="hideSuccessModal()">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success">
+          <strong> {{successfulMessage}}</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="hideSuccessModal()">Ok</button>
+      </div>
+    </div>
+  </div>
+</div>
+<div *ngIf="confirmation_message" [config]="{ show: true }" (onHidden)="onConfirmationRemovalModal()" bsModal #confirmationModalMessage="bs-modal" class="modal fade" tabindex="-1" role="dialog" aria-labelledby="dialog-auto-name">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h4 id="dialog-auto-name" class="modal-title pull-left">Confirmation</h4>
+      </div>
+      <div class="modal-body">
+        <div class="alert alert-success">
+          <strong>Are you sure you want to remove these members?</strong>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" (click)="addColumn()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="removalConfirmationDenied(remove_member)">No</button>
       </div>
     </div>
   </div>

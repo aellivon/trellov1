@@ -4,6 +4,8 @@ from annoying.functions import get_object_or_None
 
 from django.contrib.auth import get_user_model
 from django.core.mail import send_mail
+from django.core.exceptions import ValidationError
+from django.core.validators import validate_email as dj_validate_email
 from django.conf import settings
 from django.shortcuts import get_object_or_404, reverse
 
@@ -74,9 +76,9 @@ class InviteMemberSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Referral
-        fields = ('email', 'board_id')
+        fields = ('email', 'board_id', 'id')
 
-    def save(self): 
+    def create(self, *args, **kwargs): 
         # Creating New Referral
         new_referral = Referral(email=self.validated_data.get("email"))
         board_id = self.validated_data.get('board_id')
@@ -110,6 +112,8 @@ class InviteMemberSerializer(serializers.ModelSerializer):
         user = get_object_or_None(User, email=self.validated_data.get("email"))
         new_referral.user = user
         new_referral.save()
+        return new_referral
+        # super(InviteMemberSerializer, self).save(*args, **kwargs)
 
     def validate(self, data):
         # Checking if the email is already a board member or already invited
@@ -130,6 +134,13 @@ class InviteMemberSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError({'email': ['This user is already invited!']})
         return data
 
+    def validate_email(self, value):
+        try:
+            dj_validate_email(value)
+        except ValidationError as e:
+            raise serializers.ValidationError('This is not a valid email.')
+        return value
+
 
 class ArchiveMembers(serializers.ModelSerializer, ArchiveMemberMixIn):
     """
@@ -147,7 +158,7 @@ class ArchiveMembers(serializers.ModelSerializer, ArchiveMemberMixIn):
         # This could change depending on how the front end sends data
         board= self.validated_data.get("board")
         for email in self.validated_data.get("bulk_email"):
-            self.remove_member(email, board)
+            self.remove_member(email, board, self.context.get('request').user)
 
 
 class ListOfMembers(serializers.ModelSerializer):
@@ -158,11 +169,15 @@ class ListOfMembers(serializers.ModelSerializer):
 
     class Meta:
         model = BoardMember
-        fields = ('member',)
+        fields = ('member','id')
 
     def get_member(self, obj):
+        # checks if the user is still pending
         if obj.user:
-            return obj.user.email
+            to_return = obj.user.email
+            if not obj.is_confirmed:
+                to_return += " (Pending)"  
+            return to_return
         referral = get_object_or_None(Referral, board_member__pk=obj.id)
         return referral.email + " (Pending)"
 
@@ -183,14 +198,14 @@ class ColumnSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Column
-        fields = ('position', 'name')
+        fields = ('position', 'name', 'id')
 
 
 class CreateColumnSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Column
-        fields = ('name', 'board')
+        fields = ('name', 'board', 'id', 'position')
 
 
 class UpdateColumnNameSerializer(serializers.ModelSerializer):

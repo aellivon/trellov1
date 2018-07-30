@@ -10,3 +10,11 @@ export function ContentAndHeader(header, content){
         header: header
     }
 }
+
+export function ContentSubheaderAndHeader(header, sub_header, content){
+    return {
+        content: content,
+        sub_header: sub_header,
+        header: header
+    }
+}

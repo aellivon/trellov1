@@ -41,25 +41,23 @@ export class BoardsComponent implements OnInit {
   }
 
   createBoard(){
+    // Creating Board
     this.http.post(INDEX, this.form.value)
         .subscribe(
           data => {
             this.getBoard();
+            this.closeCreateModal();
           },
           errors => {
               console.log(errors);
+              this.nonFieldErrors = errors.error.non_field_errors
+              this.nameFieldErrors = errors.error.name
           }
         )
-    this.modalRef.hide();
-    this.modalRef = null;
-  }
-
-  openCreateModal(template: TemplateRef<any>){
-     // Initializeing modal so it can be userd
-    this.modalRef = this.modalService.show(template);
   }
 
   getBoard(){
+    // Getting the list of all the board
     this.http.get(INDEX, this.form.value)
     .subscribe(
           data => {
@@ -70,5 +68,16 @@ export class BoardsComponent implements OnInit {
               console.log(errors);
           }
      )
+  }
+
+  closeCreateModal(){
+    // Closing the create modal
+    this.modalRef.hide();
+    this.modalRef = null;
+  }
+
+  openCreateModal(template: TemplateRef<any>){
+     // Initializeing modal so it can be controlled here
+    this.modalRef = this.modalService.show(template);
   }
 }

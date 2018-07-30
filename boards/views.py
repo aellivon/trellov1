@@ -32,7 +32,7 @@ class HomeViewSet(ViewSet):
             get list of boards
         """
         board_members = BoardMember.active_objects.filter(
-            user=self.request.user, board__is_active=True, is_confirmed=True)
+            user=self.request.user, board__is_active=True, is_confirmed=True).order_by('-id')
         serializer = GetJoinedBoards(board_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -112,7 +112,8 @@ class BoardMemberViewSet(ViewSet, GetBoardMixIn):
             get list of members
         """
         board_id = self.kwargs.get('board_id')
-        board_members = BoardMember.active_objects.filter(board__id=board_id)
+        board = Board.active_objects.get(id=board_id)
+        board_members = BoardMember.active_objects.filter(board__id=board_id).exclude(user__pk=board.owner.id)
         serializer = ListOfMembers(board_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -134,9 +135,7 @@ class BoardMemberViewSet(ViewSet, GetBoardMixIn):
         if serializer.is_valid():
             # Need some refactoring. As I don't know how the front end sends data
             board_member=serializer.save()
-            board_member.activity.create(user=self.request.user,
-                            action=ACTIVITY_ACTION['REMOVED'],
-                            board=self.get_board())
+            print(board_member);
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -168,6 +167,7 @@ class ColumnViewSet(ViewSet, GetBoardMixIn):
 
     def create_column(self, *args, **kwargs):
         serializer=CreateColumnSerializer(data=self.request.data)
+        
         if serializer.is_valid():
             column=serializer.save()
             column.activity.create(user=self.request.user,
@@ -199,14 +199,16 @@ class ColumnViewSet(ViewSet, GetBoardMixIn):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         # Falls here if archived
-        serializer = ArchiveColumnSerializer(instance=column, data=self.request.data)
-        if serializer.is_valid():
-            column=serializer.save()
-            column.activity.create(user=self.request.user,
-                                   action=ACTIVITY_ACTION['ARCHIVED'],
-                                   board=self.get_board())
-            return Response(data=serializer.data, status=status.HTTP_200_OK)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        elif self.request.data['action'] == "archive":
+            serializer = ArchiveColumnSerializer(instance=column, data=self.request.data)
+            if serializer.is_valid():
+                column=serializer.save()
+                column.activity.create(user=self.request.user,
+                                       action=ACTIVITY_ACTION['ARCHIVED'],
+                                       board=self.get_board())
+                return Response(data=serializer.data, status=status.HTTP_200_OK)
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        return Response(status=status.HTTP_400_BAD_REQUEST)
 
 
 class ColumnDetailViewSet(ViewSet, GetBoardMixIn):

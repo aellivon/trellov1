@@ -31,13 +31,17 @@ export class TokenServiceService {
   ) { }
 
   intercept (r: HttpRequest<any>, n: HttpHandler) : Observable <HttpEvent <any>> {
-    let req = r.clone({ headers: r.headers.set('Authorization', this.authtoken()) });
+    let req = r;
+    if(this.auth.authenticated()){
+       req = r.clone({ headers: r.headers.set('Authorization', this.authtoken()) });
+    }
+
     return n.handle(req).pipe(
       tap(e => {
         if (e instanceof HttpResponse) return e;
       },
       err => {
-        if (err instanceof HttpErrorResponse) { this.flagToken(); };
+        if (err instanceof HttpErrorResponse) { return err; };
       })
     );
   }
@@ -48,7 +52,7 @@ export class TokenServiceService {
     return `JWT ${t}`;
   }
 
-  // fl  ag expired token. let the user re-login to generate
+  // flag expired token. let the user re-login to generate
   // a new authentication token.
   flagToken () {
     this.auth.rmToken();

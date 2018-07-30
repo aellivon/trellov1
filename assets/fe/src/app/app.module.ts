@@ -18,6 +18,7 @@ import { RegisterComponent } from './components/register/register.component';
 import { NavigationBarComponent } from './components/navigation-bar/navigation-bar.component';
 import { TokenServiceService } from './services/interceptors/token-service.service';
 import { SpecificBoardComponent } from './components/specific-board/specific-board.component';
+import { BoardContentComponent } from './components/board-content/board-content.component';
 
 
 @NgModule({
@@ -27,7 +28,8 @@ import { SpecificBoardComponent } from './components/specific-board/specific-boa
     BoardsComponent,
     RegisterComponent,
     NavigationBarComponent,
-    SpecificBoardComponent
+    SpecificBoardComponent,
+    BoardContentComponent
   ],
   imports: [
     BrowserModule,

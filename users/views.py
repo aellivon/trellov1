@@ -4,17 +4,18 @@ from users.models import User
 from django.contrib.auth import login
 from .serializers import RegisterSerializer
 
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 
 class UserViews(ViewSet):
     """User Views"""
 
-    # permission_classes = (IsAuthenticated,)
+    permission_classes = (AllowAny,)
 
     def sign_up(self, *args, **kwargs):
         user = RegisterSerializer(data=self.request.data)
+        import pdb; pdb.set_trace()
         if user.is_valid():
             user.create()
-            return Response(status=201)
+            return Response(user.data,status=201)
         return Response(user.errors, status=400)
 

@@ -42,7 +42,8 @@ export class AuthenticationService {
        )
       .catch(
         errors => {
-          return Promise.reject(errors.error)
+          console.log(errors);
+          return Promise.reject(errors)
         }
       )
     }

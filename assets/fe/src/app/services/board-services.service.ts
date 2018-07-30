@@ -28,6 +28,20 @@ export class BoardServicesService {
         )
     }
     update_board_name(id, value){
+      return this.http.patch(SPECIFICBOARD(id), value)
+        .toPromise()
+        .then(
+          data => {
+            return data;
+          }
+        )
+        .catch(
+          errors => {
+            return Promise.reject(errors.error);
+          }
+      )
+    }
+    archive_board(id, value){
       return this.http.post(SPECIFICBOARD(id), value)
         .toPromise()
         .then(
@@ -41,4 +55,5 @@ export class BoardServicesService {
           }
       )
     }
+
 }
