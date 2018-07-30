@@ -13,7 +13,6 @@ class UserViews(ViewSet):
 
     def sign_up(self, *args, **kwargs):
         user = RegisterSerializer(data=self.request.data)
-        import pdb; pdb.set_trace()
         if user.is_valid():
             user.create()
             return Response(user.data,status=201)

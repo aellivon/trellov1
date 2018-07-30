@@ -37,6 +37,7 @@ export class RegisterComponent implements OnInit {
     const x = this.auth.signup(this.form.value);
     x.then(data => {this.state.go('login')})
       .catch(errors => {
+        console.log(errors);
         this.nonFieldErrors = errors.non_field_errors;
         this.emailFieldErrors = errors.email;
         this.passwordFieldErrors = errors.password;
