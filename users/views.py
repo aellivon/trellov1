@@ -9,8 +9,6 @@ from rest_framework.permissions import IsAuthenticated, AllowAny
 class UserViews(ViewSet):
     """User Views"""
 
-    permission_classes = (AllowAny,)
-
     def sign_up(self, *args, **kwargs):
         user = RegisterSerializer(data=self.request.data)
         if user.is_valid():

@@ -36,7 +36,6 @@ export class AuthenticationService {
       .toPromise()
       .then(
         data => {
-          this.setToken(data);
           return data;
         }
        )

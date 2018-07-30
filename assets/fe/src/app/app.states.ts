@@ -59,7 +59,9 @@ let REGISTER_STATE: Object[] = [
             url: '/register/',
             views: ContentOnly(RegisterComponent),
             onEnter: function(trans, state){
+
                 const auth = trans.injector().get(AuthenticationService);
+
                 if(auth.authenticated()){
                    return trans.router.stateService.target('boards');
                 }
