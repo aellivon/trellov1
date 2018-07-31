@@ -67,6 +67,13 @@ class UpdateBoardStatusSerializer(serializers.ModelSerializer):
         fields = ('id','is_active')
 
 
+class ListCardSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Card
+        fields = ('id' , 'name')
+
+
 class InviteMemberSerializer(serializers.ModelSerializer):
     """
         Serializer for inviting a member
@@ -196,10 +203,14 @@ class ReferralValidationSerializer(serializers.ModelSerializer):
 
 class ColumnSerializer(serializers.ModelSerializer):
 
+    cards = serializers.SerializerMethodField()
+
     class Meta:
         model = Column
-        fields = ('position', 'name', 'id')
+        fields = ('position', 'name', 'id', 'cards')
 
+    def get_cards(self, obj):
+        return ListCardSerializer(obj.card_set.all(), many=True).data
 
 class CreateColumnSerializer(serializers.ModelSerializer):
 
@@ -239,13 +250,6 @@ class ColumnDetailSerializer(serializers.ModelSerializer):
 
     def get_number_of_cards(self, obj):
         return obj.count()
-
-
-class ListCardSerializer(serializers.ModelSerializer):
-
-    class Meta:
-        model = Card
-        fields = ('id' , 'name')
 
 
 class CreateCardSerializer(serializers.ModelSerializer):

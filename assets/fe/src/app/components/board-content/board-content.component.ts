@@ -88,10 +88,16 @@ export class BoardContentComponent implements OnInit {
         data => {
             console.log(data);
             this.columns.splice(this.remember_index,1);
+            
+            this.columnGroup.reset();
+            this.remember_index = -1;
+            this.closeModal();
+            
         }
     )
     .catch(
         errors => {
+
             console.log(errors);
         }
     )
@@ -114,10 +120,12 @@ export class BoardContentComponent implements OnInit {
             this.columnGroup.reset();
             this.remember_index = -1;
             this.closeModal();
+            this.columnNameFieldErrors = "";
         }
     )
     .catch(
         errors => {
+            this.columnNameFieldErrors = errors.error.name;
             console.log(errors);
         }
     )
@@ -137,6 +145,4 @@ export class BoardContentComponent implements OnInit {
      // Initializeing modal so it can be controlled here
     this.refModal = this.modalService.show(template);
   }
-
-
 }
