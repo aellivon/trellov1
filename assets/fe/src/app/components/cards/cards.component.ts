@@ -239,8 +239,10 @@ export class CardsComponent implements OnInit {
       }
     )
     .catch(
-      errors => 
-      console.log(errors);
+      errors => {
+        console.log(errors)
+      } 
+     
     )
   }
 
