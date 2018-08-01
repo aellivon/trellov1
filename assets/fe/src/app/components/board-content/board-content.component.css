@@ -12,6 +12,10 @@
     z-index: 2;
 }
 
+.div-column-title:hover{
+    background-color: #E8E8E8;
+}
+
 .column-content{
     max-height: 100%;
     min-height: 55px;
@@ -52,13 +56,3 @@
     text-align: center;
 }
 
-
-.div-add-card{
-    width: 90%;
-    background-color: white;
-    margin-top: 10px;
-    height: 40px;
-    padding: 7px;
-    margin-left: 5%;
-    text-align: center;
-}

@@ -38,6 +38,7 @@ card_actions = CardViewSet.as_view({
 })
 
 specific_card_actions = SpecificCardViewSet.as_view({
+    'get': 'get_card_details',
     'patch': 'update_card'
 })
 
@@ -71,9 +72,9 @@ urlpatterns = [
     path('api/boards/<int:board_id>/columns/<int:column_id>/cards/', card_actions, name="cards"),
     path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/',
         specific_card_actions, name="specific_card"),
-    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/members',
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/members/',
         specific_card_member_actions, name="card_member"),
-    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/comments',
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/comments/',
         card_comment_actions, name="card_comments"),
     # WIP
     path('api/boards/validate/<str:token>/',display_user_validation,name="user_validation"),

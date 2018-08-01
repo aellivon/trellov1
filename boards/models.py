@@ -1,6 +1,11 @@
+import pytz
+
 from django.db import models
 from django.db.models import Max
 from django.contrib.contenttypes.fields import GenericRelation
+from django.contrib.humanize.templatetags.humanize import naturaltime
+
+from datetime import datetime
 
 from trello.models import CommonInfo
 
@@ -129,7 +134,8 @@ class Card(CommonInfo):
     # Mabalik na ni sa json
     @property
     def is_overdue(self):
-        return True
+        utc=pytz.UTC
+        return (self.due_date.replace(tzinfo=utc) < datetime.now().replace(tzinfo=utc))
 
 
 class CardMember(CommonInfo):
@@ -156,4 +162,9 @@ class CardComment(CommonInfo):
 
     def __str__(self):
         return "{}-{}".format(self.user, self.comment)
+
+    @property 
+    def humanize_time(self):
+        return naturaltime(self.date_commented)
+
 

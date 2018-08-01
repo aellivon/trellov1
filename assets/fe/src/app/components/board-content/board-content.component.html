@@ -7,15 +7,7 @@
           <span aria-hidden="true">&times;</span>
         </button>
       </div>
-      <div *ngFor="let card of column.cards"  class="div-card-container">
-        <div class="card form-control">
-          <h5 clas="title">Card 1</h5>
-        </div>
-      </div>
-      <!-- <app-cards id="column.id"> </app-cards> -->
-      <div class="div-add-card form-control btn">
-        <h5 clas="add-card">Add Card</h5>
-      </div>
+      <app-cards column_id="{{column.id}}" board_id={{board_id}}> </app-cards>
     </div>
   </div>
   <div class="parent-container">

@@ -19,7 +19,8 @@ from .serializers import(
     ListCardSerializer, InviteMemberSerializer, ReferralValidationSerializer, UpdateBoardStatusSerializer,
     UpdateColumnNameSerializer, UpdatePositionSerializer, UpdateCardNameSerializer, UpdateCardDueDateSerializer, 
     UpdateCardDescriptionSerializer, TransferCardSerializer, ArchiveCardSerializer, CardMemberSerializer,
-    CreateCardMemberSerializer, CardCommentSerializer, AddCommentSerializer, ArchiveCardMemberSerializer)
+    CreateCardMemberSerializer, CardCommentSerializer, GetDetailSerializer, AddCommentSerializer,
+    ArchiveCardMemberSerializer, UpdateBoardMemberStatusSerializer)
 
 
 class HomeViewSet(ViewSet):
@@ -256,10 +257,18 @@ class SpecificCardViewSet(ViewSet, GetBoardMixIn):
 
     permission_classes =(IsAuthenticated, BoardMemberPermission)
 
+
+    def get_card_details(self, *args, **kwargs):
+        card_id = self.kwargs.get('card_id')
+        card = get_object_or_404(Card, pk=card_id, is_active=True)
+        serializer = GetDetailSerializer(card)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
     def update_card(self, *args, **kwargs):
         card_id = self.kwargs.get('card_id')
         card = get_object_or_404(Card,pk=card_id)
-        UpdateCardDescriptionSerializer
+
 
         if self.request.data['action'] == "name":
             serializer = UpdateCardNameSerializer(instance=card, data=self.request.data)
@@ -322,35 +331,26 @@ class SpecificCardMember(ViewSet, GetBoardMixIn):
         """
             get list of boards
         """
-        card_id = self.kwargs.get('card_id')
-        card_members = CardMember.active_objects.filter(card__id=card_id)
-        serializer = CardMemberSerializer(card_members, many=True)
+        board_id = self.kwargs.get('board_id')
+        board_members = BoardMember.active_objects.filter(board__id=board_id, is_confirmed=True)
+        serializer = CardMemberSerializer(board_members, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 
     def assign_card_member(self, *args, **kwargs):
         # Could change depending on how the data is passed
-        serializer=CreateCardMemberSerializer(data=self.request.data)
+        serializer=CreateCardMemberSerializer(data=self.request.data, context={"request": self.request})
         if serializer.is_valid():
-            card_member=serializer.save()
-            card_member.activity.create(user=self.request.user,
-                                        action=ACTIVITY_ACTION['ASSIGNED'],
-                                        board=self.get_board())
+            card_member=serializer.create()
             return Response(data=serializer.data,status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
     def remove_card_member(self, *args, **kwargs):
         # Could change depending on how the data is passed
-        board_member = self.request.data['board_member']
-        card_member = get_object_or_404(CardMember, board_member=board_member, is_active=True)
-        serializer=UpdateBoardStatusSerializer(instance=card_member, data=self.request.data)
+        serializer=UpdateBoardMemberStatusSerializer(data=self.request.data, context={"request": self.request})
         if serializer.is_valid():
-            card_member = serializer.save()
-            # Need some refactoring. As I don't know how the front end sends data
-            card_member.activity.create(user=self.request.user,
-                                        action=ACTIVITY_ACTION['UNASSIGNED'],
-                                        board=self.get_board())
+            card_member = serializer.create()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -364,8 +364,8 @@ class CardComments(ViewSet, GetBoardMixIn):
 
     def list_of_comment_in_a_card(self, *args, **kwargs):
         card_id = self.kwargs.get('card_id')
-        card_comments = CardComment.active_objects.filter(card__id=card_id)
-        serializer = CardCommentSerializer(card_comments, many=True)
+        card_comments = CardComment.active_objects.filter(card__id=card_id).order_by('-date_commented')
+        serializer = CardCommentSerializer(card_comments, many=True, context={"request": self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def add_comment(self, *args, **kwargs):
