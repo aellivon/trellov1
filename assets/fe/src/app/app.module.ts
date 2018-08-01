@@ -8,9 +8,6 @@ import { FormsModule } from '@angular/forms';
 import { CookieService } from 'ngx-cookie-service';
 import { BsModalService, ModalModule } from 'ngx-bootstrap';
 
-// Trying another package for supporting bootstrap and angular
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-
 import { UIRouterModule } from '@uirouter/angular';
 
 import { APP_STATES } from './app.states';
@@ -41,7 +38,6 @@ import { CardsComponent } from './components/cards/cards.component';
     ReactiveFormsModule,
     FormsModule,
     HttpClientModule,
-    NgbModule.forRoot(),
     ModalModule.forRoot(),
     HttpClientXsrfModule.withOptions({
       cookieName: 'csrftoken',
