@@ -16,4 +16,6 @@ class BoardMemberPermission(permissions.BasePermission):
         board_member = get_object_or_None(
             BoardMember, board__id=board_id, user__pk=request.user.id,
             is_active=True)
+        if board_member:
+            return bool(board_member.is_confirmed)
         return bool(board_member)

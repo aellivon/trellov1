@@ -56,8 +56,15 @@ card_comment_actions = CardComments.as_view({
     'patch': 'remove_comment'
 })
 
-display_user_validation = UserValidationViewSet.as_view({
-    'post': 'display_user_validation'
+leave_board = BoardMemberViewSet.as_view({
+    'patch': 'leave_board'
+})
+
+user_validation_actions = UserValidationViewSet.as_view({
+    'get': 'display_user_validation',
+    'post': 'register_validated_user',
+    'patch': 'join_board'
+
 })
 
 
@@ -67,6 +74,8 @@ urlpatterns = [
     path('api/boards/', boards, name='boards'),
     path('api/boards/<int:board_id>/', board_detail, name='board_detail'),
     path('api/boards/<int:board_id>/members/', member_actions, name='member_actions'),
+    # need some refactoring
+    path('api/boards/<int:board_id>/members/leave/', leave_board, name='member_actions'),
     path('api/boards/<int:board_id>/columns/', column_actions, name="column_actions"),
     path('api/boards/<int:board_id>/columns/<int:column_id>/', column_detail, name="column_detail"),
     path('api/boards/<int:board_id>/columns/<int:column_id>/cards/', card_actions, name="cards"),
@@ -76,6 +85,5 @@ urlpatterns = [
         specific_card_member_actions, name="card_member"),
     path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/comments/',
         card_comment_actions, name="card_comments"),
-    # WIP
-    path('api/boards/validate/<str:token>/',display_user_validation,name="user_validation"),
+    path('api/validate/<str:token>/',user_validation_actions,name="user_validation"),
 ]

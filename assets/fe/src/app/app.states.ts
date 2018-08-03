@@ -6,6 +6,8 @@ import { RegisterComponent } from './components/register/register.component'
 import { NavigationBarComponent } from './components/navigation-bar/navigation-bar.component'
 import { SpecificBoardComponent } from './components/specific-board/specific-board.component'
 import { BoardContentComponent } from './components/board-content/board-content.component'
+import { ErrorComponent } from './components/error/error.component';
+import { TokenValidationComponent } from './components/token-validation/token-validation.component';
 
 import { AuthenticationService } from './services/auth/authentication.service';
 
@@ -85,6 +87,25 @@ let SPECIFIC_BOARD_STATE: Object[] = [
 ] 
 
 
+let ERROR_STATE: Object[] = [
+    {
+        name: 'error_page',
+        url: '/error/:error_no/',
+        views: ContentAndHeader(NavigationBarComponent, ErrorComponent),
+        params: {error_no : null},
+    }
+]
+
+
+let TOKEN_VALIDATION_STATE: Object[] = [
+    {
+        name: 'token_validation',
+        url: '/validate/:token/',
+        views: ContentOnly(TokenValidationComponent)
+    }
+]
+
+
 export const APP_STATES = {
 
     otherwise: '/login/',
@@ -93,6 +114,8 @@ export const APP_STATES = {
         BOARD_STATE,
         LOG_OUT_STATE,
         REGISTER_STATE,
-        SPECIFIC_BOARD_STATE
+        SPECIFIC_BOARD_STATE,
+        ERROR_STATE,
+        TOKEN_VALIDATION_STATE
     )
 }

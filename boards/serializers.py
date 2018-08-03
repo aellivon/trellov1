@@ -10,11 +10,13 @@ from django.conf import settings
 from django.shortcuts import get_object_or_404, reverse
 
 from rest_framework import serializers
+from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
+from rest_framework_jwt.settings import api_settings
 
 from  users.models import User
 
 from .models import Board, Card, Column, Referral, BoardMember, CardMember, CardComment
-from .mixins import ArchiveMemberMixIn
+from .mixins import ArchiveMemberMixIn, JoinBoardMixIn
 
 
 class CreateBoardSerializer(serializers.ModelSerializer):
@@ -45,6 +47,41 @@ class BoardNameSerializer(serializers.ModelSerializer):
     class Meta:
         model = Board
         fields = ('id','name')
+
+
+class GetBoard(serializers.ModelSerializer):
+    """
+        Serializer for updating the board name
+    """
+    show_owner_buttons = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Board
+        fields = ('id','name','show_owner_buttons')
+
+    def get_show_owner_buttons(self, obj):
+        if obj.owner == self.context.get('request').user:
+            return True
+        return False
+
+
+class CompletedValidationSerializer(serializers.ModelSerializer):
+    """
+        Serializer for updating the board name
+    """
+    auth_token = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Board
+        fields = ('id','name', 'auth_token')
+
+    def get_auth_token(self, obj):
+        jwt_payload_handler = api_settings.JWT_PAYLOAD_HANDLER
+        jwt_encode_handler = api_settings.JWT_ENCODE_HANDLER
+        payload = jwt_payload_handler(self.context.get('user'))
+        authenticated = jwt_encode_handler(payload)
+        return authenticated
+
 
 
 class GetJoinedBoards(serializers.ModelSerializer):
@@ -122,8 +159,7 @@ class InviteMemberSerializer(serializers.ModelSerializer):
         board_id = self.validated_data.get('board_id')
         new_referral.generate_token()
         
-        validation_url = (reverse('boards:user_validation', 
-            kwargs={'token':new_referral.token}))
+        validation_url = settings.VALIDATION_URL + new_referral.token + '/'
         host = settings.BASE_URL
         inviter = self.context.get('request').user
         board = get_object_or_404(Board, pk=board_id)
@@ -199,6 +235,27 @@ class ArchiveMembers(serializers.ModelSerializer, ArchiveMemberMixIn):
             self.remove_member(email, board, self.context.get('request').user)
 
 
+class LeaveBoard(serializers.ModelSerializer, ArchiveMemberMixIn):
+    """
+        Archiving bulk meember
+    """
+    email = serializers.SerializerMethodField()
+
+    class Meta:
+        model = BoardMember
+        fields = ('email', 'board')
+
+    def save(self):
+        # This could change depending on how the front end sends data
+        board= self.validated_data.get("board")
+        email= self.data.get("email")
+
+        self.remove_member(email, board, self.context.get('request').user)
+
+    def get_email(self, obj):
+        return self.context.get('request').user.email
+
+
 class ListOfMembers(serializers.ModelSerializer):
     """
         List of members
@@ -223,13 +280,15 @@ class ListOfMembers(serializers.ModelSerializer):
 class ReferralValidationSerializer(serializers.ModelSerializer):
 
     has_account = serializers.SerializerMethodField()
-
+    board_name = serializers.CharField(source='board_member.board.name')
     class Meta:
         model = Referral
-        fields = ('id', 'has_account')
+        fields = ('id', 'has_account','email', 'board_name')
 
     def get_has_account(self, obj):
         return bool(obj.board_member.user)
+
+
 
 
 class ColumnSerializer(serializers.ModelSerializer):

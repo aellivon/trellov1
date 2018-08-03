@@ -1,6 +1,7 @@
 import * as _ from 'lodash';
 
 import { Injectable } from '@angular/core';
+
 import { 
   HttpEvent,
   HttpInterceptor,
@@ -34,6 +35,7 @@ export class TokenServiceService {
     let req = r;
     if(this.auth.authenticated()){
        req = r.clone({ headers: r.headers.set('Authorization', this.authtoken()) });
+   
     }
 
     return n.handle(req).pipe(
@@ -41,14 +43,22 @@ export class TokenServiceService {
         if (e instanceof HttpResponse) return e;
       },
       err => {
-        if (err instanceof HttpErrorResponse) { return err; };
+        if (err instanceof HttpErrorResponse) {
+          this.checkPermission(err);
+          return err; };
       })
     );
   }
 
   // Get user token from the local storage
   authtoken () {
-    const t = _.get(this.auth.getToken(), ['token'], null);
+    let t = _.get(this.auth.getToken(), ['token'], null);
+    if (t === null){
+      // try getting the token directly
+      // this code is a "band aid" code and should not be written if 
+      //   you make this project a reference
+      t = this.auth.getToken();
+    }
     return `JWT ${t}`;
   }
 
@@ -57,5 +67,11 @@ export class TokenServiceService {
   flagToken () {
     this.auth.rmToken();
     this.state.go('login');
+  }
+
+  checkPermission(err){
+    if(err.status === 403){
+      this.state.go('error_page', {error_no: err.status})
+    }
   }
 }

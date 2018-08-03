@@ -27,6 +27,8 @@ export class SpecificBoardComponent implements OnInit {
       bulk_email:[],
       board: null
   }
+  clicked: boolean = false;
+  show_owner_buttons: boolean = false;
 
 
   removalError: string = "";
@@ -78,7 +80,12 @@ export class SpecificBoardComponent implements OnInit {
 
   getBoardDetails(){
     const x = this.boardService.get_board_name(this.board_id);
-    x.then(data => {this.current_name = (<any>data).name;})
+    x.then(
+      data => {
+        this.current_name = (<any>data).name;
+        this.show_owner_buttons = (<any>data).show_owner_buttons
+      }
+    )
       .catch(errors => {
           console.log(errors);
       }
@@ -118,21 +125,27 @@ export class SpecificBoardComponent implements OnInit {
   }
 
   inviteMember(){
-    console.log(this.boardMemberGroup.controls['email'].value);
-    const response = this.memberService.invite_member(this.board_id, this.boardMemberGroup.value);
-    response.then(data => {
-                this.emailInviteFieldErrors = "";
-                this.successfulMessage = "Email is successfuly sent!";
-                console.log(data);
+    if(this.clicked === false){
+      this.clicked = true;
+      console.log(this.boardMemberGroup.controls['email'].value);
+      const response = this.memberService.invite_member(this.board_id, this.boardMemberGroup.value);
+      response.then(data => {
+                  this.emailInviteFieldErrors = "";
+                  this.successfulMessage = "Email is successfuly sent!";
+                  console.log(data);
 
-                this.loadMembers();
-                this.closeModal();
-                this.showSuccessModal();
-             })
-            .catch(errors => {
-              console.log(errors);
-              this.emailInviteFieldErrors = errors.error.email;
-            })
+                  this.closeModal();
+                  this.clicked = false;
+                  this.loadMembers();
+                  this.showSuccessModal();
+               })
+              .catch(errors => {
+                console.log(errors);
+                this.emailInviteFieldErrors = errors.error.email;
+                this.clicked = false;
+              })
+    }
+    
   }
 
   getMembers(template: TemplateRef<any>){
@@ -209,9 +222,30 @@ export class SpecificBoardComponent implements OnInit {
     this.openModal(template);
   }
 
+  leaveGroup(){
+    (<any>this.to_pass).board = this.board_id
+    const response = this.memberService.leave_group(this.board_id, this.to_pass);
+    response.then(
+      data => {
+        console.log(data);
+        this.state.go('boards');
+      }
+    )
+    .catch(
+      errors => {
+        console.log(errors);
+      }
+    )
+  }
+
     // This section is for the confirmation removal modal
   showConfirmationRemovalModal(): void {
     let got_one: boolean = false
+    // resetting to pass
+    this.to_pass = {
+      bulk_email:[],
+      board: null
+    }
     console.log(this.members);
     for(var key in this.members){
       if (this.members[key].hasOwnProperty("Checked") && (<any>this.members[key]).Checked === true){

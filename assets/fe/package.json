@@ -24,6 +24,7 @@
     "@uirouter/angular": "^2.0.1",
     "core-js": "^2.5.4",
     "lodash": "^4.17.10",
+    "ng2-dragula": "^2.0.2",
     "ngx-bootstrap": "^3.0.1",
     "ngx-cookie-service": "^1.0.10",
     "rxjs": "^6.0.0",

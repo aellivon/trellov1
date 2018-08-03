@@ -8,6 +8,7 @@ import { Transition, StateService } from '@uirouter/angular';
 
 import { ColumnService } from '../../services/column.service';
 
+import { AuthenticationService } from '../../services/auth/authentication.service';
 
 @Component({
   selector: 'app-board-content',
@@ -35,12 +36,14 @@ export class BoardContentComponent implements OnInit {
   constructor(
       private ColService: ColumnService,
       private trans: Transition,
-      private modalService:BsModalService)
+      private modalService:BsModalService,
+      private auth: AuthenticationService)
     {
       this.board_id = trans.params().board_id; 
     }
 
   ngOnInit() {
+    
      var response = this.ColService.fetch_columns(this.board_id);
      response.then(
          data => {

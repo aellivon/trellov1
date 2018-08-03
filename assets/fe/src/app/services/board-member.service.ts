@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 
-import { MANAGEMEMBERS } from '../constants/endpoints';
+import { MANAGEMEMBERS, LEAVEGROUP } from '../constants/endpoints';
 
 @Injectable({
   providedIn: 'root'
@@ -43,6 +43,21 @@ export class BoardMemberService {
 
     remove_members(id, value){
       return this.http.patch(MANAGEMEMBERS(id),value)
+      .toPromise()
+      .then(
+        data => {
+          return data;
+        }
+      )
+      .catch(
+        errors => {
+          return Promise.reject(errors);
+        }
+      )
+    }
+
+    leave_group(id, value){
+      return this.http.patch(LEAVEGROUP(id),value)
       .toPromise()
       .then(
         data => {

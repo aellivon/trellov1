@@ -91,6 +91,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'trello.wsgi.application'
 
 BASE_URL = "http://127.0.0.1:8000"
+VALIDATION_URL = "/validate/"
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 

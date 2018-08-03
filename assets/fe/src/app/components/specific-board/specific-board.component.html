@@ -6,16 +6,19 @@
         </h3>
     </div>
     <div class="mt-2 d-flex justify-content-end col-lg-4">
-      <button class="btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal">Board Stream</button>
-      <div class="dropdown text-right dropdown-right">
+     <!--  <button class="btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal">Board Stream</button> -->
+      <div *ngIf="show_owner_buttons" class="dropdown text-right dropdown-right">
         <a class="btn btn-primary dropdown-toggle ml-2" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
-          <a class="dropdown-item" data-toggle="modal" data-target="#AddMemberModal" (click)="openModal(invite_member)">Invite Member</a>
-          <a *ngIf="members" class="dropdown-item" (click)="getMembers(remove_member)" data-toggle="modal" data-target="#RemoveMemberModal">Remove Member </a>
+          <a *ngIf="show_owner_buttons" class="dropdown-item" data-toggle="modal" data-target="#AddMemberModal" (click)="openModal(invite_member)">Invite Member</a>
+          <a *ngIf="members && show_owner_buttons" class="dropdown-item" (click)="getMembers(remove_member)" data-toggle="modal" data-target="#RemoveMemberModal">Remove Member </a>
+          
         </div>
+
       </div>
-      <div class="dropdown text-right  ml-2">
-        <a class="btn btn-primary dropdown-toggle text-right " href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
+      <button *ngIf="show_owner_buttons == false" (click)="leaveGroup()" class="ml-2 btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal">Leave Group</button>
+      <div class="dropdown text-right ml-2">
+        <a *ngIf="show_owner_buttons" class="btn btn-primary dropdown-toggle text-right " href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Settings</a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">
           <a class="dropdown-item" data-toggle="modal" data-target="#updateBoardName" (click)="openModal(update_name_modal)">Update Board</a>
           <a class="dropdown-item" data-toggle="modal" data-target="#ArchiveBoardModal" (click)="openModal(archive_board)">Archive Board</a>
@@ -74,6 +77,9 @@
       <input formControlName="email" name="email" class="form-control d-inline-block mb-2">
       <div *ngIf="emailInviteFieldErrors" class="alert-danger alert">
         {{emailInviteFieldErrors}}
+      </div>
+      <div *ngIf="clicked" class="alert-success alert">
+        Sending email...
       </div>
     </div>
     <div class="modal-footer">
@@ -134,7 +140,7 @@
         </div>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-primary" (click)="addColumn()">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="removeMember()">Yes</button>
         <button type="button" class="btn btn-primary" (click)="removalConfirmationDenied(remove_member)">No</button>
       </div>
     </div>

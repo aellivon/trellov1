@@ -20,6 +20,8 @@ import { TokenServiceService } from './services/interceptors/token-service.servi
 import { SpecificBoardComponent } from './components/specific-board/specific-board.component';
 import { BoardContentComponent } from './components/board-content/board-content.component';
 import { CardsComponent } from './components/cards/cards.component';
+import { ErrorComponent } from './components/error/error.component';
+import { TokenValidationComponent } from './components/token-validation/token-validation.component';
 
 
 @NgModule({
@@ -31,7 +33,9 @@ import { CardsComponent } from './components/cards/cards.component';
     NavigationBarComponent,
     SpecificBoardComponent,
     BoardContentComponent,
-    CardsComponent
+    CardsComponent,
+    ErrorComponent,
+    TokenValidationComponent
   ],
   imports: [
     BrowserModule,

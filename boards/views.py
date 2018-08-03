@@ -2,20 +2,25 @@ from activities.constants import ACTIVITY_ACTION
 
 from django.shortcuts import get_object_or_404
 from django.contrib.auth import login
+from django.http import JsonResponse
 
 from rest_framework import status
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ViewSet
 from rest_framework.response import Response
+from rest_framework_jwt.serializers import VerifyJSONWebTokenSerializer
+from rest_framework_jwt.settings import api_settings
+
 
 from users.models import User
+from users.serializers import RegisterSerializer
 
 from .models import Board, BoardMember, Card, Column, Referral, CardMember, CardComment
-from .mixins import GetBoardMixIn
+from .mixins import GetBoardMixIn, JoinBoardMixIn
 from .permissions import BoardMemberPermission
 from .serializers import( 
-    ArchiveMembers, ArchiveColumnSerializer, BoardNameSerializer, CreateCardSerializer,CreateBoardSerializer, 
-    GetJoinedBoards, ColumnSerializer, CreateColumnSerializer,ColumnDetailSerializer , ListOfMembers,
+    ArchiveMembers, ArchiveColumnSerializer, LeaveBoard, BoardNameSerializer, CompletedValidationSerializer, CreateCardSerializer, 
+    CreateBoardSerializer, GetBoard, GetJoinedBoards, ColumnSerializer, CreateColumnSerializer,ColumnDetailSerializer , ListOfMembers,
     ListCardSerializer, InviteMemberSerializer, ReferralValidationSerializer, UpdateBoardStatusSerializer,
     UpdateColumnNameSerializer, UpdatePositionSerializer, UpdateCardNameSerializer, UpdateCardDueDateSerializer, 
     UpdateCardDescriptionSerializer, TransferCardSerializer, ArchiveCardSerializer, CardMemberSerializer,
@@ -66,7 +71,7 @@ class SpecificBoardViewSet(ViewSet):
         """
         board_id= self.kwargs.get('board_id')
         board= get_object_or_404(Board, is_active=True, id=board_id)
-        serializer= BoardNameSerializer(board)
+        serializer= GetBoard(board, context={"request": self.request})
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def update_board_name(self, *args, **kwargs):
@@ -105,7 +110,6 @@ class BoardMemberViewSet(ViewSet, GetBoardMixIn):
         Board member views
     """
 
-
     permission_classes =(IsAuthenticated, BoardMemberPermission)
 
     def list_of_members(self, *args, **kwargs):
@@ -140,8 +144,15 @@ class BoardMemberViewSet(ViewSet, GetBoardMixIn):
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
+    def leave_board(self, *args, **kwargs):
+        serializer=LeaveBoard(data=self.request.data, context={"request": self.request})
+        if serializer.is_valid():
+            # Need some refactoring. As I don't know how the front end sends data
+            board_member=serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class UserValidationViewSet(ViewSet):
+class UserValidationViewSet(ViewSet, JoinBoardMixIn):
     """
         User validation view set
     """
@@ -150,9 +161,33 @@ class UserValidationViewSet(ViewSet):
         # WIP
         token = self.kwargs.get('token')
         referral = get_object_or_404(Referral, token=token, is_active = True)
-        serializer= ReferralValidationSerializer(referral)
+        if self.request.user.is_anonymous or referral.board_member.user == self.request.user:
+            serializer= ReferralValidationSerializer(referral)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(status=status.HTTP_403_FORBIDDEN)
+
+    def register_validated_user(self, *agrs, **kwargs):
+        user = RegisterSerializer(data=self.request.data)
+        if user.is_valid():
+            instance = user.create()
+            board_member = self.complete_validation(instance)
+            board = Board.active_objects.filter(pk=board_member.board.id)
+            serializer = CompletedValidationSerializer(board, many=True, context={"user": instance})
+            return Response(serializer.data,status=201)
+        return Response(serializer.errors, status=400)
+
+    def join_board(self, *args, **kwargs):
+        self.complete_validation(self.request.user)
+        token = self.kwargs.get('token')
+        # is_active is not needed
+        referral = get_object_or_404(Referral, token=token)
+        user = self.request.user
+        if self.request.user.is_anonymous:
+            user = referral.board_member.user
+        board = Board.active_objects.filter(pk=referral.board_member.board.id)
+        serializer = CompletedValidationSerializer(board, many=True, context={"user": user})
         return Response(serializer.data, status=status.HTTP_200_OK)
-       
+
 
 class ColumnViewSet(ViewSet, GetBoardMixIn):
     """
