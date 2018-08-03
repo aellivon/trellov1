@@ -1,10 +1,14 @@
 import { Component, Input, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { FormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 
+
+import { DragulaService } from 'ng2-dragula';
+
 import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
 
 import { CardService } from '../../services/card.service';
 
+import { Subscription, Observable } from 'rxjs';
 
 @Component({
   selector: 'app-cards',
@@ -27,12 +31,14 @@ export class CardsComponent implements OnInit {
   addComment: boolean = false;
   updateCard: boolean = false;
   comments: any[] = [];
+  ongoing_process: boolean = false;
 
   nameError: string;
   commentError: string;
   descriptionError: string;
   dateTimeError: string;
 
+  subs = new Subscription();
 
   cardGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -43,8 +49,10 @@ export class CardsComponent implements OnInit {
     name: new FormControl('', Validators.required),
     description: new FormControl('', Validators.required),
     action: new FormControl('', Validators.required),
+    column: new FormControl('', Validators.required),
     due_date: new FormControl('', Validators.required),
     is_active: new FormControl(false,Validators.required),
+    position: new FormControl(null, Validators.required),
     id: new FormControl(null)
   })
 
@@ -57,12 +65,57 @@ export class CardsComponent implements OnInit {
 
   constructor(
       private cardServe: CardService,
-      private modalService:BsModalService
-  ) { }
+      private modalService:BsModalService,
+      private dragula: DragulaService
+  ) { 
+    this.subs.add(this.dragula.drag("CARDS")
+      .subscribe(({ name, el, source }) => {
+        // ...
+      })
+    );
+    this.subs.add(this.dragula.drop("CARDS")
+      .subscribe(({ name, el, target, source, sibling }) => {
+        this.updatedCardGroup.controls['id'].setValue((<any>el).dataset.id);
+        this.updatedCardGroup.controls['column'].setValue((<any>target).dataset.column_id);
+        this.updatedCardGroup.controls['position'].setValue(0);
+        this.transferCard((<any>el).dataset.id);
+      })
+
+    );
+  }
+
+
+  // ngOnDestroy() {
+  //   // destroy all the subscriptions at once
+  //   this.subs.unsubscribe();
+  // }
+
+  transferCard(to_pass_id_url){
+    this.updatedCardGroup.controls['action'].setValue('transfer');
+    if(this.ongoing_process === false){
+      this.ongoing_process = true;
+      const resp = this.cardServe.patch_card(
+        this.board_id, this.column_id, to_pass_id_url, this.updatedCardGroup.value);
+      resp.then(
+        data => {
+
+          this.ongoing_process = false;
+        }
+      )
+      .catch(
+        errors => {
+          console.log(errors);
+          this.ongoing_process = false;
+        }
+      )
+    }
+  }
 
   ngOnInit() {
       this.loadCards();  
   }
+
+
 
   loadCards(){
     const res = this.cardServe.fetch_cards(this.board_id, this.column_id);

@@ -45,8 +45,8 @@
 // Used for reflect-metadata in JIT. If you use AOT (and only Angular decorators), you can remove.
 import 'core-js/es7/reflect';
 
-// // Work around for dragula
-// (window as any).global = window;
+// Work around for dragula
+(window as any).global = window;
 
 /**
  * Web Animations `@angular/platform-browser/animations`

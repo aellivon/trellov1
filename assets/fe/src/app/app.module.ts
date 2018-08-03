@@ -4,6 +4,7 @@ import { HttpClientXsrfModule } from '@angular/common/http';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
+import { DragulaModule } from 'ng2-dragula';
 
 import { CookieService } from 'ngx-cookie-service';
 import { BsModalService, ModalModule } from 'ngx-bootstrap';
@@ -43,6 +44,7 @@ import { TokenValidationComponent } from './components/token-validation/token-va
     FormsModule,
     HttpClientModule,
     ModalModule.forRoot(),
+    DragulaModule.forRoot(),
     HttpClientXsrfModule.withOptions({
       cookieName: 'csrftoken',
       headerName: 'X-CSRFToken',

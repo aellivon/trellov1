@@ -1,5 +1,5 @@
-<div *ngIf="cards.length" class="div-card-container">
-  <div *ngFor="let card of cards let i = index" [attr.data-index]="i" class="form-control btn card-margin" (click)="setUpValues(updateCardModal, card.id, i)" [ngClass]="{'card_overdue': card.is_overdue === true, 'card' : card.is_overdue === false}">
+<div class="div-card-container" [ngClass]="{ 'bg-black': (cards.length === 0), 'bg-gray': (cards.length)}" [attr.data-column_id]="column_id" dragula="CARDS" [(dragulaModel)]="cards">
+  <div *ngFor="let card of cards let i = index" [attr.data-id]="card.id" [attr.data-index]="i" class="form-control btn card-margin" (click)="setUpValues(updateCardModal, card.id, i)" [ngClass]="{'card_overdue': card.is_overdue === true, 'card' : card.is_overdue === false}">
     <h5 clas="title">{{card.name}}</h5>
   </div>
 </div>
@@ -175,7 +175,7 @@
 </ng-template>
 <ng-template #ManageMembers>
   <div class="modal-header">
-    <h5 class="modal-title" id="exampleModalLabel">Remove Members</h5>
+    <h5 class="modal-title" id="exampleModalLabel">Assign Members</h5>
     <button type="button" class="close" (click)="closeNestedModal('lg')">
       <span aria-hidden="true">&times;</span>
     </button>

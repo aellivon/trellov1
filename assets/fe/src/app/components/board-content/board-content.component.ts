@@ -2,6 +2,8 @@ import { Component, OnInit, TemplateRef } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 
+import { DragulaModule } from 'ng2-dragula'
+
 import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
 
 import { Transition, StateService } from '@uirouter/angular';
