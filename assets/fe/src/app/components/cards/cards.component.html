@@ -59,7 +59,7 @@
         <div *ngIf="descriptionError" class="alert-danger alert">
           <strong>{{descriptionError}}</strong>
         </div>
-        <textarea #textarea_description (click)="shiftUpdateDescription(true)" id="text-id-description" class="textarea class-description w-100 h-20" placeholder="Card Description"> {{remember_card.description}}</textarea>
+        <textarea #textarea_description (click)="shiftUpdateDescription(true)" id="text-id-description" class="textarea class-description w-100 h-20" placeholder="Card Description" [ngClass]="{'no-border' : updateDescription === false}"> {{remember_card.description}}</textarea>
       </div>
       <div class="col-lg-3 col-md-3 col-sm-3 text-center">
         <button data-toggle="modal" name="MessageBoxModalAlert" class="btn btn-secondary card-button-invite mt-1 w-100" data-dismiss="modal" (click)="setUpCardMemberModal(ManageMembers, updateCardModal)">Members</button>
@@ -150,6 +150,7 @@
       </div>
       <div class="modal-footer">
         <button id="set-due-date" type="submit" class="btn btn-primary">Set Date</button>
+        <button (click)="setDueDateToNull()" type="button" class="btn btn-primary">Remove Due Date</button>
       </div>
     </form>
   </div>

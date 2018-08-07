@@ -315,7 +315,7 @@ class SpecificCardViewSet(ViewSet, GetBoardMixIn):
                 return Response(data=serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         elif self.request.data['action'] == "description":
-            serializer = UpdateCardDescriptionSerializer(instance=card, data=self.request.data)
+            serializer = UpdateCardDescriptionSerializer(instance=card, data=self.request.data) 
             if serializer.is_valid():
                 card=serializer.save()
                 card.activity.create(user=self.request.user,

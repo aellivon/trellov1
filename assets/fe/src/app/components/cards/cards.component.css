@@ -55,6 +55,10 @@
   text-indent: 0px;
 }
 
+.no-border{
+  border: 0px;
+  background-color: #e5e5e5;
+}
 
 .card-comments{
     word-wrap: break-word;

@@ -7,3 +7,7 @@
     overflow-y: auto;
     overflow-x: auto;
 }
+
+.whole-container{
+  overflow: hidden;
+}

@@ -1,4 +1,6 @@
 <div class="container-fluid">
+  <app-sidebar  [board_id]="board_id" [open_sidebar]="open_sidebar" (update_sidebar)="update_sidebar($event)" > </app-sidebar>
+
   <div class="pl-3 row custom-row">
     <div class="mt-2 col-lg-8">
       <h3 [ngModel]="current_name" ngDefaultControl>
@@ -6,7 +8,7 @@
         </h3>
     </div>
     <div class="mt-2 d-flex justify-content-end col-lg-4">
-     <!--  <button class="btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal">Board Stream</button> -->
+      <button class="btn btn-primary board-stream" id="btn-board-stream" data-dismiss="modal" (click)="openSidebar()">Board Stream</button>
       <div *ngIf="show_owner_buttons" class="dropdown text-right dropdown-right">
         <a class="btn btn-primary dropdown-toggle ml-2" href="https://example.com" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Members</a>
         <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuLink">

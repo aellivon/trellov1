@@ -21,6 +21,7 @@ export class SpecificBoardComponent implements OnInit {
   board_id: number;
   board_details: object;
   members: object;
+  open_sidebar: boolean = false;
   boardNameFieldErrors: string;
   emailInviteFieldErrors: string;
   to_pass: object = {
@@ -66,7 +67,7 @@ export class SpecificBoardComponent implements OnInit {
       private http: HttpClient,
       private state: StateService,
       private boardService: BoardServicesService,
-      private memberService: BoardMemberService
+      private memberService: BoardMemberService,
   ) { this.board_id = trans.params().board_id; }
 
   ngOnInit() {
@@ -77,6 +78,14 @@ export class SpecificBoardComponent implements OnInit {
     this.loadMembers();
   }
 
+  openSidebar(){
+    this.open_sidebar = true;
+    console.log(this.open_sidebar);
+  }
+
+  update_sidebar(state: boolean){
+    this.open_sidebar = false;
+  }
 
   getBoardDetails(){
     const x = this.boardService.get_board_name(this.board_id);

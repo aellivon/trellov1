@@ -103,7 +103,7 @@ class Card(CommonInfo):
         This is the model for the card
     """
     name = models.TextField()
-    description = models.TextField(null=True)
+    description = models.TextField(null=True, max_length=255)
     column = models.ForeignKey(Column, on_delete=models.CASCADE)
     position = models.IntegerField()
     due_date = models.DateTimeField(null=True)

@@ -19,3 +19,9 @@ export const MANAGECARDCOMMENT = (board_id, column_id, card_id) => {
 export const VALIDATE = (token) => {
     return "api/validate/" + token + "/"
 }
+export const GETBOARDACTIVITIES = (board_id) => {
+    return 'api/boards/'+ board_id +'/activities/'
+}
+export const GETUSERACTIVITIES = () => {
+    return 'api/boards/user_activities/'
+}

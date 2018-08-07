@@ -1,8 +1,9 @@
-import { Component, OnInit, TemplateRef } from '@angular/core';
+import { Component, OnInit, TemplateRef, ViewChild } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { FormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 
 import { DragulaModule } from 'ng2-dragula'
+import { DragulaService } from 'ng2-dragula';
 
 import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
 
@@ -12,19 +13,22 @@ import { ColumnService } from '../../services/column.service';
 
 import { AuthenticationService } from '../../services/auth/authentication.service';
 
+import { Subscription, Observable } from 'rxjs';
+
 @Component({
   selector: 'app-board-content',
   templateUrl: './board-content.component.html',
   styleUrls: ['./board-content.component.css']
 })    
 export class BoardContentComponent implements OnInit {
+   @ViewChild('card_selector') child;
 
   refModal: BsModalRef;
   columns: any[];
   board_id: number;
   remember_index:number;
   columnNameFieldErrors: string;
-
+  subs = new Subscription();
 
   columnGroup: FormGroup = new FormGroup({
     name: new FormControl('', Validators.required),
@@ -39,9 +43,25 @@ export class BoardContentComponent implements OnInit {
       private ColService: ColumnService,
       private trans: Transition,
       private modalService:BsModalService,
-      private auth: AuthenticationService)
+      private auth: AuthenticationService,
+      private dragula: DragulaService)
     {
-      this.board_id = trans.params().board_id; 
+      this.board_id = trans.params().board_id;
+          this.subs.add(this.dragula.drag("CARDS")
+      .subscribe(({ name, el, source }) => {
+        // ...
+      })
+    );
+    this.subs.add(this.dragula.drop("CARDS")
+      .subscribe(({ name, el, target, source, sibling }) => {
+        console.log(name);
+        const id: number = (<any>el).dataset.id;
+        const column: number = (<any>target).dataset.column_id;
+        const position: number = 0;
+        this.child.setUpTransferCards(id, column, position);
+
+      })
+    );
     }
 
   ngOnInit() {
@@ -59,6 +79,7 @@ export class BoardContentComponent implements OnInit {
          }
      )
   }
+
 
   setPatchValues(index, template: TemplateRef<any>, update_type){
       this.remember_index = index;

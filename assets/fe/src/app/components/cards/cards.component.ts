@@ -1,7 +1,6 @@
 import { Component, Input, OnInit, TemplateRef, ViewEncapsulation } from '@angular/core';
 import { FormsModule, FormControl, Validators, FormGroup } from '@angular/forms';
 
-
 import { DragulaService } from 'ng2-dragula';
 
 import { BsModalService, BsModalRef, ModalDirective } from 'ngx-bootstrap';
@@ -50,7 +49,7 @@ export class CardsComponent implements OnInit {
     description: new FormControl('', Validators.required),
     action: new FormControl('', Validators.required),
     column: new FormControl('', Validators.required),
-    due_date: new FormControl('', Validators.required),
+    due_date: new FormControl(null, Validators.required),
     is_active: new FormControl(false,Validators.required),
     position: new FormControl(null, Validators.required),
     id: new FormControl(null)
@@ -65,23 +64,22 @@ export class CardsComponent implements OnInit {
 
   constructor(
       private cardServe: CardService,
-      private modalService:BsModalService,
-      private dragula: DragulaService
+      private modalService:BsModalService
   ) { 
-    this.subs.add(this.dragula.drag("CARDS")
-      .subscribe(({ name, el, source }) => {
-        // ...
-      })
-    );
-    this.subs.add(this.dragula.drop("CARDS")
-      .subscribe(({ name, el, target, source, sibling }) => {
-        this.updatedCardGroup.controls['id'].setValue((<any>el).dataset.id);
-        this.updatedCardGroup.controls['column'].setValue((<any>target).dataset.column_id);
-        this.updatedCardGroup.controls['position'].setValue(0);
-        this.transferCard((<any>el).dataset.id);
-      })
-
-    );
+    // this.subs.add(this.dragula.drag("CARDS")
+    //   .subscribe(({ name, el, source }) => {
+    //     // ...
+    //   })
+    // );
+    // this.subs.add(this.dragula.drop("CARDS")
+    //   .subscribe(({ name, el, target, source, sibling }) => {
+    //     console.log(name);
+    //     this.updatedCardGroup.controls['id'].setValue((<any>el).dataset.id);
+    //     this.updatedCardGroup.controls['column'].setValue((<any>target).dataset.column_id);
+    //     this.updatedCardGroup.controls['position'].setValue(0);
+    //     this.transferCard((<any>el).dataset.id);
+    //   })
+    // );
   }
 
 
@@ -90,15 +88,23 @@ export class CardsComponent implements OnInit {
   //   this.subs.unsubscribe();
   // }
 
+  setUpTransferCards(id: number, column: number, position: number){
+      this.updatedCardGroup.controls['id'].setValue(id);
+      this.updatedCardGroup.controls['column'].setValue(column);
+      this.updatedCardGroup.controls['position'].setValue(position);
+      this.transferCard(id);
+
+  }
+
   transferCard(to_pass_id_url){
     this.updatedCardGroup.controls['action'].setValue('transfer');
     if(this.ongoing_process === false){
       this.ongoing_process = true;
+
       const resp = this.cardServe.patch_card(
         this.board_id, this.column_id, to_pass_id_url, this.updatedCardGroup.value);
       resp.then(
         data => {
-
           this.ongoing_process = false;
         }
       )
@@ -115,7 +121,10 @@ export class CardsComponent implements OnInit {
       this.loadCards();  
   }
 
-
+  setDueDateToNull(){
+    this.updatedCardGroup.controls['due_date'].setValue(null);
+    this.setUpPatchValues('due date');
+  }
 
   loadCards(){
     const res = this.cardServe.fetch_cards(this.board_id, this.column_id);
@@ -417,6 +426,8 @@ export class CardsComponent implements OnInit {
     )
     .catch(
       errors => {
+
+        console.log(errors);
         if(action=="name"){
            this.nameError = errors.error.name;
            console.log("trapped");
@@ -425,7 +436,6 @@ export class CardsComponent implements OnInit {
         }else if(action == "due date"){
           this.dateTimeError = "That is not a valid date!";
         }
-        console.log(errors);
       }
     )
   }

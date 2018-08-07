@@ -23,6 +23,8 @@ import { BoardContentComponent } from './components/board-content/board-content.
 import { CardsComponent } from './components/cards/cards.component';
 import { ErrorComponent } from './components/error/error.component';
 import { TokenValidationComponent } from './components/token-validation/token-validation.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { UserActivityComponent } from './components/user-activity/user-activity.component';
 
 
 @NgModule({
@@ -36,7 +38,9 @@ import { TokenValidationComponent } from './components/token-validation/token-va
     BoardContentComponent,
     CardsComponent,
     ErrorComponent,
-    TokenValidationComponent
+    TokenValidationComponent,
+    SidebarComponent,
+    UserActivityComponent
   ],
   imports: [
     BrowserModule,

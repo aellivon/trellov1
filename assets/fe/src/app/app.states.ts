@@ -1,4 +1,4 @@
-import { ContentOnly, ContentAndHeader, ContentSubheaderAndHeader } from './utils/layouts.utils'
+import { ContentOnly, ContentAndHeader, ContentSubheaderAndHeader, ContentSubheaderSideBarAndHeader } from './utils/layouts.utils'
 
 import { LoginComponent } from './components/login/login.component'
 import { BoardsComponent } from './components/boards/boards.component'
@@ -8,6 +8,8 @@ import { SpecificBoardComponent } from './components/specific-board/specific-boa
 import { BoardContentComponent } from './components/board-content/board-content.component'
 import { ErrorComponent } from './components/error/error.component';
 import { TokenValidationComponent } from './components/token-validation/token-validation.component';
+import { SidebarComponent } from './components/sidebar/sidebar.component';
+import { UserActivityComponent } from './components/user-activity/user-activity.component';
 
 import { AuthenticationService } from './services/auth/authentication.service';
 
@@ -71,11 +73,28 @@ let REGISTER_STATE: Object[] = [
         }
 ]
 
+let USER_ACTIVITY_STATE: Object[] = [
+    {
+        name: 'activity',
+        url: '/activity/',
+        views: ContentAndHeader(
+            NavigationBarComponent, UserActivityComponent ),
+        params: {board_id : null},
+        onEnter: function(trans, state){
+            const auth = trans.injector().get(AuthenticationService);
+            if(!(auth.authenticated())){
+               return trans.router.stateService.target('login');
+            }
+        }
+    }
+]
+
 let SPECIFIC_BOARD_STATE: Object[] = [
     {
         name: 'board_state',
         url: '/board_state/:board_id/',
-        views: ContentSubheaderAndHeader(NavigationBarComponent, SpecificBoardComponent, BoardContentComponent),
+        views: ContentSubheaderAndHeader(
+            NavigationBarComponent, SpecificBoardComponent, BoardContentComponent),
         params: {board_id : null},
         onEnter: function(trans, state){
             const auth = trans.injector().get(AuthenticationService);
@@ -116,6 +135,7 @@ export const APP_STATES = {
         REGISTER_STATE,
         SPECIFIC_BOARD_STATE,
         ERROR_STATE,
-        TOKEN_VALIDATION_STATE
+        TOKEN_VALIDATION_STATE,
+        USER_ACTIVITY_STATE
     )
 }

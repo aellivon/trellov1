@@ -16,11 +16,25 @@ class ActivityViewSet(ViewSet):
     """
     permission_classes =(IsAuthenticated, BoardMemberPermission)
 
-    def list_of_all_activities(self, *args, **kwargs):
+    def list_of_all_board_activities(self, *args, **kwargs):
         """
             get list of boards
         """
         board_id = self.kwargs.get('board_id')
         activities = Activity.active_objects.filter(board__id=board_id).order_by('-modified')
+        serializer = AllActivitySerializer(activities, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class ActivityViewWithoutBoardMemberPermission(ViewSet):
+
+    permission_classes = (IsAuthenticated,)
+
+    def list_of_all_user_activites(self, *args, **kwargs):
+        user = self.request.user
+        """
+            get all user activity
+        """
+        activities = Activity.active_objects.filter(user=user).order_by('-modified')
         serializer = AllActivitySerializer(activities, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

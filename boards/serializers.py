@@ -17,6 +17,7 @@ from  users.models import User
 
 from .models import Board, Card, Column, Referral, BoardMember, CardMember, CardComment
 from .mixins import ArchiveMemberMixIn, JoinBoardMixIn
+from .tasks import send, error_handler
 
 
 class CreateBoardSerializer(serializers.ModelSerializer):
@@ -170,15 +171,6 @@ class InviteMemberSerializer(serializers.ModelSerializer):
                 "Click the link to join the board. \n{}").format(
                     inviter.email, board.name, full_activation_link)
 
-        send_mail(
-            'Invitation Request',
-            full_message,
-            settings.EMAIL,
-            [self.validated_data.get("email")],
-            fail_silently=False,
-        )
-
-        # Passing in the instance so that the board member signal can save the board
         new_referral.board = board
         new_referral.inviter = inviter
 
@@ -186,8 +178,13 @@ class InviteMemberSerializer(serializers.ModelSerializer):
         user = get_object_or_None(User, email=self.validated_data.get("email"))
         new_referral.user = user
         new_referral.save()
+
+        # Celery Email Sync
+        send.apply_async((
+            full_message, settings.EMAIL, [self.validated_data.get("email")]))
         return new_referral
-        # super(InviteMemberSerializer, self).save(*args, **kwargs)
+
+
 
     def validate(self, data):
         # Checking if the email is already a board member or already invited
