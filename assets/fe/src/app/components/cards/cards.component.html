@@ -145,7 +145,12 @@
         <div *ngIf="dateTimeError" class="alert-danger alert">
           <strong>{{dateTimeError}}</strong>
         </div>
-        <label for="" class="mr-2">Due Date</label>
+        <div *ngIf="current_due_date_value" class="form-control mb-3">
+          <strong> <label class="pr-2"> Current Due Date:  </label> </strong>
+          <label>   {{current_due_date_value}} </label>
+        </div>
+        
+        <label for="" class="mr-2">Update Due Date</label>
         <input formControlName="due_date" id="input-due-date" type="datetime-local">
       </div>
       <div class="modal-footer">

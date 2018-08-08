@@ -26,7 +26,7 @@ class Activity(CommonInfo):
     board = models.ForeignKey('boards.Board', on_delete=models.CASCADE)
 
     def __str__(self):
-        return "{}".format(self.user) 
+        return "{}".format(self.user.email + " " + self.action) 
         
     class Meta:
         verbose_name = "Activity"
@@ -38,6 +38,7 @@ class Activity(CommonInfo):
 
     def safe_get(self, model, *attrs):
         # To do : improve this
+
         for attr in attrs:
             try:
                 model = getattr(model, attr)
@@ -65,7 +66,7 @@ class Activity(CommonInfo):
                 'str': ' "{}"'
             },
             'board member': {
-                'property': ['user', 'username'],
+                'property': ['user', 'email'],
                 'str':  ' "{}"'
             },
             'board': {
@@ -73,7 +74,7 @@ class Activity(CommonInfo):
                 'str': ' board named "{}"'
             },
             'card member': {
-                'property': ['board_member','user', 'username'],
+                'property': ['board_member','user', 'email'],
                 'str': ' {} to a card'
             },
             'card comment': {
@@ -81,8 +82,11 @@ class Activity(CommonInfo):
                 'str': ' comment "{}" on  a card'
             }
         }
+
         # * makes *args know that you are passing a list
         val = self.safe_get(self.content_object,*output[content_type]['property'])
+
+        
         return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
 
 

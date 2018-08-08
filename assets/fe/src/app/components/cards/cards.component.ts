@@ -36,6 +36,7 @@ export class CardsComponent implements OnInit {
   commentError: string;
   descriptionError: string;
   dateTimeError: string;
+  current_due_date_value: string = "";
 
   subs = new Subscription();
 
@@ -49,7 +50,7 @@ export class CardsComponent implements OnInit {
     description: new FormControl('', Validators.required),
     action: new FormControl('', Validators.required),
     column: new FormControl('', Validators.required),
-    due_date: new FormControl(null, Validators.required),
+    due_date: new FormControl('', Validators.required),
     is_active: new FormControl(false,Validators.required),
     position: new FormControl(null, Validators.required),
     id: new FormControl(null)
@@ -273,6 +274,7 @@ export class CardsComponent implements OnInit {
 
   refreshDueDate(data){
     (<any>this.remember_card).due_date = data.due_date;
+    this.current_due_date_value = data.due_date;
     (<any>this.cards)[(<any>this.remember_card).index].due_date = data.due_date;
     (<any>this.cards)[(<any>this.remember_card).index].is_overdue = data.is_overdue;
     this.closeNestedModal('lg');
@@ -449,7 +451,9 @@ export class CardsComponent implements OnInit {
     if(due_date_exists){
       due_date_exists = new Date(due_date_exists);
       this.updatedCardGroup.controls['due_date'].setValue(this.format_date_for_input(due_date_exists));
+      this.current_due_date_value = this.formatDate(due_date_exists);
     }
+
     this.openNestedModal(template, remember_template)
   }
 
