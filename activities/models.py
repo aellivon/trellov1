@@ -67,6 +67,7 @@ class Activity(CommonInfo):
             },
             'board member': {
                 'property': ['user', 'email'],
+                'second_property': ['board', 'name'],
                 'str':  ' "{}"'
             },
             'board': {
@@ -84,7 +85,11 @@ class Activity(CommonInfo):
         }
 
         # * makes *args know that you are passing a list
-        val = self.safe_get(self.content_object,*output[content_type]['property'])
+        val = ""
+        if self.action != "joined":
+            val = self.safe_get(self.content_object,*output[content_type]['property'])
+        else:
+            val = self.safe_get(self.content_object,*output[content_type]['second_property'])
 
         
         return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
