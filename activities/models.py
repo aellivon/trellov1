@@ -22,6 +22,8 @@ class Activity(CommonInfo):
     content_object = GenericForeignKey('content_type', 'object_id')
     modified = models.DateTimeField(default=datetime.now)
     old_value = models.CharField(null=True, max_length=225)
+
+    constant_updated_value = models.CharField(max_length=225, blank=True, null=True)
     # Getting boards without importing
     board = models.ForeignKey('boards.Board', on_delete=models.CASCADE)
 
@@ -77,7 +79,7 @@ class Activity(CommonInfo):
             },
             'card member': {
                 'property': ['board_member','user', 'email'],
-                'str': ' {} to a card'
+                'str': ' {} to the card'
             },
             'card comment': {
                 'property': ['comment'],
@@ -86,17 +88,20 @@ class Activity(CommonInfo):
         }
 
         # * makes *args know that you are passing a list
-        print(self.action != "left")
         val = ""
         if self.action != "joined" and self.action != "left":
             val = self.safe_get(self.content_object,*output[content_type]['property'])
         else:
             val = self.safe_get(self.content_object,*output[content_type]['second_property'])
 
+        second_string = ""
+        if self.constant_updated_value != None:
+            second_string = '"' +  self.constant_updated_value + '"'
+
         if self.action != "joined" and self.action != "left":
-            return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
+            return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val) + " " + second_string
         else:
-            return self.user.email + " " +  self.action + " " + output[content_type]['second_str'].format(val)
+            return self.user.email + " " +  self.action + " " + output[content_type]['second_str'].format(val)  + " " + second_string
        
 
 

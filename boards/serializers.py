@@ -130,7 +130,8 @@ class UpdateBoardMemberStatusSerializer(serializers.ModelSerializer):
                 # Need some refactoring. As I don't know how the front end sends data
                 to_update.activity.create(user=self.context.get('request').user,
                                         action=ACTIVITY_ACTION['UNASSIGNED'],
-                                        board=self.to_update.board_member.board)
+                                        board=to_update.board_member.board,
+                                        constant_updated_value= to_update.card.name)
             except Exception as e:
                 print(e)
 
@@ -443,7 +444,8 @@ class CreateCardMemberSerializer(serializers.ModelSerializer):
             instance.save()
             instance.activity.create(user=self.context.get('request').user,
                                         action=ACTIVITY_ACTION['ASSIGNED'],
-                                        board=board_member.board)
+                                        board=board_member.board, 
+                                        constant_updated_value=card.name)
 
 
 class ArchiveCardMemberSerializer(serializers.ModelSerializer):
