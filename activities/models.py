@@ -67,8 +67,9 @@ class Activity(CommonInfo):
             },
             'board member': {
                 'property': ['user', 'email'],
+                'str':  ' "{}"',
                 'second_property': ['board', 'name'],
-                'str':  ' "{}"'
+                'second_str': ' "{}" board'
             },
             'board': {
                 'property': ['name'],
@@ -91,8 +92,11 @@ class Activity(CommonInfo):
         else:
             val = self.safe_get(self.content_object,*output[content_type]['second_property'])
 
-        
-        return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
+        if self.action != "joined":
+            return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
+        else:
+            return self.user.email + " " +  self.action + " " + output[content_type]['second_str'].format(val)
+       
 
 
     @property
