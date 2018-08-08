@@ -67,27 +67,9 @@ export class CardsComponent implements OnInit {
       private cardServe: CardService,
       private modalService:BsModalService
   ) { 
-    // this.subs.add(this.dragula.drag("CARDS")
-    //   .subscribe(({ name, el, source }) => {
-    //     // ...
-    //   })
-    // );
-    // this.subs.add(this.dragula.drop("CARDS")
-    //   .subscribe(({ name, el, target, source, sibling }) => {
-    //     console.log(name);
-    //     this.updatedCardGroup.controls['id'].setValue((<any>el).dataset.id);
-    //     this.updatedCardGroup.controls['column'].setValue((<any>target).dataset.column_id);
-    //     this.updatedCardGroup.controls['position'].setValue(0);
-    //     this.transferCard((<any>el).dataset.id);
-    //   })
-    // );
   }
 
 
-  // ngOnDestroy() {
-  //   // destroy all the subscriptions at once
-  //   this.subs.unsubscribe();
-  // }
 
   setUpTransferCards(id: number, column: number, position: number){
       this.updatedCardGroup.controls['id'].setValue(id);

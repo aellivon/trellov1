@@ -69,7 +69,7 @@ class Activity(CommonInfo):
                 'property': ['user', 'email'],
                 'str':  ' "{}"',
                 'second_property': ['board', 'name'],
-                'second_str': ' "{}" board'
+                'second_str': 'the board "{}"' 
             },
             'board': {
                 'property': ['name'],
@@ -86,13 +86,14 @@ class Activity(CommonInfo):
         }
 
         # * makes *args know that you are passing a list
+        print(self.action != "left")
         val = ""
-        if self.action != "joined":
+        if self.action != "joined" and self.action != "left":
             val = self.safe_get(self.content_object,*output[content_type]['property'])
         else:
             val = self.safe_get(self.content_object,*output[content_type]['second_property'])
 
-        if self.action != "joined":
+        if self.action != "joined" and self.action != "left":
             return self.user.email + " " +  self.action + " " + output[content_type]['str'].format(val)
         else:
             return self.user.email + " " +  self.action + " " + output[content_type]['second_str'].format(val)
