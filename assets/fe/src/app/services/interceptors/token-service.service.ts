@@ -70,7 +70,7 @@ export class TokenServiceService {
   }
 
   checkPermission(err){
-    if(err.status === 403){
+    if(err.status === 403 || err.status === 404){
       this.state.go('error_page', {error_no: err.status})
     }
   }
