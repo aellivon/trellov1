@@ -1,33 +1,70 @@
-from .views import BoardViews, BoardMemberViews, BoardActivityWithPermissions
+from .views import (
+    HomeViewSet, ColumnViewSet, CardViewSet, ColumnDetailViewSet, SpecificBoardViewSet, 
+    SpecificCardViewSet, BoardMemberViewSet, UserValidationViewSet, SpecificCardMember,
+    CardComments)
 from django.urls import path
 
-boards =  BoardViews.as_view({
+boards =  HomeViewSet.as_view({
     'post': 'create_board',
     'get': 'list_of_boards'
 })
 
-board_detail =  BoardActivityWithPermissions.as_view({
+board_detail =  SpecificBoardViewSet.as_view({
     'get': 'list_of_board_detail',
     'post': 'update_board_status',
     'patch': 'update_board_name',
 })
 
 
-#  Will combine when it's time for member end points
-invite_member = BoardMemberViews.as_view({
-    'post': 'invite_member'
+member_actions = BoardMemberViewSet.as_view({
+    'get': 'list_of_members',
+    'post': 'invite_member',
+    'patch': 'remove_members'
 })
 
-remove_member = BoardMemberViews.as_view({
-    'post': 'remove_member'
+column_actions = ColumnViewSet.as_view({
+    'get': 'list_of_column_in_board',
+    'post': 'create_column',
+    'patch': 'update_column'
 })
 
-remove_members = BoardMemberViews.as_view({
-    'post': 'remove_members'
+column_detail = ColumnDetailViewSet.as_view({
+    'get': 'get_column_detail'
 })
 
-display_user_validation = BoardMemberViews.as_view({
-    'get': 'display_user_validation'
+card_actions = CardViewSet.as_view({
+    'get': 'list_of_cards_in_a_column',
+    'post': 'create_card',
+})
+
+specific_card_actions = SpecificCardViewSet.as_view({
+    'get': 'get_card_details',
+    'patch': 'update_card'
+})
+
+
+specific_card_member_actions = SpecificCardMember.as_view({
+    'get': 'list_of_card_member',
+    'post': 'assign_card_member',
+    'patch': 'remove_card_member'
+})
+
+
+card_comment_actions = CardComments.as_view({
+    'get': 'list_of_comment_in_a_card',
+    'post': 'add_comment',
+    'patch': 'remove_comment'
+})
+
+leave_board = BoardMemberViewSet.as_view({
+    'patch': 'leave_board'
+})
+
+user_validation_actions = UserValidationViewSet.as_view({
+    'get': 'display_user_validation',
+    'post': 'register_validated_user',
+    'patch': 'join_board'
+
 })
 
 
@@ -36,9 +73,17 @@ app_name = 'boards'
 urlpatterns = [
     path('api/boards/', boards, name='boards'),
     path('api/boards/<int:board_id>/', board_detail, name='board_detail'),
-    # Member End Points
-    path('invite_member/', invite_member, name='invite_member'),
-    path('remove_member/', remove_member, name='remove_member'),
-    path('remove_members/', remove_members, name='remove_members'),
-    path('validate/<str:token>/',display_user_validation,name="user_validation"),
+    path('api/boards/<int:board_id>/members/', member_actions, name='member_actions'),
+    # need some refactoring
+    path('api/boards/<int:board_id>/members/leave/', leave_board, name='member_actions'),
+    path('api/boards/<int:board_id>/columns/', column_actions, name="column_actions"),
+    path('api/boards/<int:board_id>/columns/<int:column_id>/', column_detail, name="column_detail"),
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/', card_actions, name="cards"),
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/',
+        specific_card_actions, name="specific_card"),
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/members/',
+        specific_card_member_actions, name="card_member"),
+    path('api/boards/<int:board_id>/columns/<int:column_id>/cards/<int:card_id>/comments/',
+        card_comment_actions, name="card_comments"),
+    path('api/validate/<str:token>/',user_validation_actions,name="user_validation"),
 ]

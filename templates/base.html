@@ -1,0 +1,27 @@
+{% load static %}
+
+<head>
+    <!-- Latest compiled and minified CSS -->
+    <meta charset="utf-8">
+    <title>Trello</title>
+    <base href="/">
+    <link rel="stylesheet" type="text/css" href="{% static '/vendors/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static '/vendors/jquery-ui-1.12.1/jquery-ui.min.css' %}">
+    <script src="{% static '/vendors/js/jquery.js' %}"></script>
+    <script src="{% static '/vendors/js/moment.min.js' %}"></script>
+    <script src="{% static '/vendors/jquery-ui-1.12.1/jquery-ui.min.js' %}"></script>
+    <script src="{% static '/vendors/js/popper.js' %}"></script>
+    <script src="{% static '/vendors/js/bootstrap.min.js' %}"></script>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+
+<body>
+    <app-root></app-root>
+
+    <!--  Angular 2 Imports  -->
+    <script type="text/javascript" src="{% static 'fe/dist/fe/polyfills.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fe/dist/fe/styles.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fe/dist/fe/vendor.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fe/dist/fe/main.js' %}"></script>
+    <script type="text/javascript" src="{% static 'fe/dist/fe/runtime.js' %}"></script>
+</body>

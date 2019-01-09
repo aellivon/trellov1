@@ -1,0 +1,43 @@
+<div *ngIf="has_account == false" class="container">
+  <div class="row">
+    <div class=" d-flex h-100 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12 col-xs-10 offset-xs-2 align-items-center">
+      <form [formGroup]="form" (ngSubmit)="singUp()">
+        <h2 class="label-margin"> REGISTER TO JOIN BOARD </h2>
+        <div *ngIf="nonFieldErrors" class="alert alert-danger error_box">
+          <strong>{{ nonFieldErrors }}</strong>
+        </div>
+        <label for="" class="label-margin mt-1">Email</label>
+
+        <input formControlName="email" name="email" class="form-control d-inline-block mb-2" readonly>
+        <div *ngIf="emailFieldErrors" class="alert alert-danger error_box d-inline-block w-100">
+          <strong>{{ emailFieldErrors }}</strong>
+        </div>
+        <label for="" class="label-margin mt-1">Password</label>
+        <input formControlName="password" name="password" type="password" class="form-control d-inline-block mb-2">
+        <div *ngIf="passwordFieldErrors" class="alert alert-danger error_box d-inline-block w-100">
+          <strong>{{ passwordFieldErrors }}</strong>
+        </div>
+        <label for="" class="label-margin mt-1">Confirm Password</label>
+        <input formControlName="confirm_password" name="password" type="password" class="form-control d-inline-block mb-2">
+        <div *ngIf="confirmPasswordFieldErrors" class="alert alert-danger error_box d-inline-block w-100">
+          <strong>{{ confirmPasswordFieldErrors }}</strong>
+        </div>
+        <button id="sign-up-submit" type="submit" class="btn btn-success">Sign Up</button>
+      </form>
+    </div>
+  </div>
+</div>
+<div *ngIf="has_account == true" class="container">
+  <div class="row">
+    <div class=" d-flex h-100 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12 col-xs-10 offset-xs-2 align-items-center">
+      <div class="user-validation-margin-top">
+        <div class="alert alert-success user_validation_box">
+
+            <strong>Validation is successful! </strong>
+
+        </div>
+        <button name="JoinBoard" (click)="joinBoard()" id="JoinBoard" type="submit" class="btn btn-success ButtonMargin">Join the board now!</button>
+      </div>
+    </div>
+  </div>
+</div>

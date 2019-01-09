@@ -1,0 +1,13 @@
+.board-stream{
+    height: 37px;
+}
+
+.overflow-auto{
+    max-height: 300px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.whole-container{
+  overflow: hidden;
+}

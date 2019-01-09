@@ -9,17 +9,16 @@ class RegisterSerializer(serializers.Serializer):
     password = serializers.CharField(write_only=True)
     confirm_password = serializers.CharField(write_only=True)
 
-    def clean(self):
-        email = self.validated_data.get('email')
-        password = self.validated_data.get('password')
-        password1 = self.validated_data.get('confirm_password')
-
-
+    def validate(self, data):
+        email = data['email']
         if User.objects.filter(email=email).exists():
             raise serializers.ValidationError('Email address is already taken.')
+        return data
 
-        if password != password1:
+    def validate_confirm_password(self, value):
+        if self.initial_data.get('password') != value:
             raise serializers.ValidationError('Passwords do not match.')
+        return value
 
     def create(self):
         user = User.objects.create_user(

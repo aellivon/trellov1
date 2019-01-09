@@ -1,8 +1,6 @@
+from .models import Board, BoardMember, Referral
 from django.db.models.signals import post_save, pre_save
 from django.dispatch import receiver
-
-from .models import Board, BoardMember, Referral
-
 
 @receiver(post_save, sender=Board)
 def add_board_member(sender, instance, created, **kwargs):
@@ -10,7 +8,7 @@ def add_board_member(sender, instance, created, **kwargs):
         new_board_member = BoardMember(user=instance.owner,board=instance)
         new_board_member.is_confirmed = True
         new_board_member.save()
-        
+
 @receiver(pre_save, sender=Referral)
 def sending_email_board_member(sender, instance, **kwargs):
     new_board_member = BoardMember(user=instance.user,board=instance.board)

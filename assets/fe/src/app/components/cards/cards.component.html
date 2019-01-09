@@ -1,0 +1,201 @@
+<div class="div-card-container" [ngClass]="{ 'bg-black': (cards.length === 0), 'bg-gray': (cards.length)}" [attr.data-column_id]="column_id" dragula="CARDS" [(dragulaModel)]="cards">
+  <div *ngFor="let card of cards let i = index" [attr.data-id]="card.id" [attr.data-index]="i" class="form-control btn card-margin" (click)="setUpValues(updateCardModal, card.id, i)" [ngClass]="{'card_overdue': card.is_overdue === true, 'card' : card.is_overdue === false}">
+    <h5 clas="title">{{card.name}}</h5>
+  </div>
+</div>
+<div class="div-add-card form-control btn">
+  <h5 clas="add-card" (click)="openModal(addCardTemplate)">Add Card</h5>
+</div>
+<ng-template #addCardTemplate>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Add Card</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="cardGroup" (ngSubmit)="addCard()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Name</label>
+      <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+      <div *ngIf="cardNameFieldErrors" class="alert-danger alert">
+        {{cardNameFieldErrors}}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+  </form>
+</ng-template>
+<ng-template #updateCardModal>
+  <form [formGroup]="updatedCardGroup" (ngSubmit)="setUpPatchValues('name')">
+    <div class="modal-header override-modal-header m-0 pb-0">
+      <div *ngIf="nameError" class="alert-danger alert d-block col-lg-9 col-md-9 col-sm-9">
+        <strong>{{nameError}}</strong>
+      </div>
+      <button type="button" class="close" (click)="closeModal()">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <div class="modal-header mt-0 pt-0">
+      <h3 (click)="shiftUpdateName(true)" *ngIf="updateName === false" class="card-details-name">{{remember_card.name}}</h3>
+      <input *ngIf="updateName" formControlName="name" class="font-30 card-details-name">
+      <div *ngIf="updateName" class="d-flex align-content-center">
+        <button name="" id="card-button-cancel-description" class="btn btn-secondary card-button-add-description m-1" (click)="shiftUpdateName(false)">Cancel</button>
+        <button name="" id="card-button-add-description" class="btn btn-secondary card-button-add-description m-1">Save</button>
+      </div>
+    </div>
+  </form>
+  <div class="modal-body container no-gutters">
+    <div class="row">
+      <div class="col-lg-9 col-md-9 col-sm-9">
+        <h5 class="modal-label-desc" id="exampleModalLabel">Card Description</h5>
+      </div>
+      <div class="col-lg-3 col-md-3 col-sm-3 text-center">
+        <h5 class="modal-label-manage" id="exampleModalLabel">Manage</h5>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-lg-9 col-md-9 col-sm-9 justify-content-start">
+        <div *ngIf="descriptionError" class="alert-danger alert">
+          <strong>{{descriptionError}}</strong>
+        </div>
+        <textarea #textarea_description (click)="shiftUpdateDescription(true)" id="text-id-description" class="textarea class-description w-100 h-20" placeholder="Card Description" [ngClass]="{'no-border' : updateDescription === false}"> {{remember_card.description}}</textarea>
+      </div>
+      <div class="col-lg-3 col-md-3 col-sm-3 text-center">
+        <button data-toggle="modal" name="MessageBoxModalAlert" class="btn btn-secondary card-button-invite mt-1 w-100" data-dismiss="modal" (click)="setUpCardMemberModal(ManageMembers, updateCardModal)">Members</button>
+        <button data-toggle="modal" name="MessageBoxModalAlert" class="btn btn-secondary card-button-due-date mt-1 w-100" (click)="setUpDueDate(DueDateModal, updateCardModal)" data-dismiss="modal">Due Date</button>
+        <button data-toggle="modal" name="MessageBoxModalAlert" (click)="openNestedModal(ArchivedModal,updateCardModal)" class="btn btn-secondary card-button-due-date mt-1 w-100" data-dismiss="modal">Archive</button>
+      </div>
+    </div>
+    <div class="row" *ngIf="updateDescription">
+      <div class="col-lg-9 col-md-9 col-sm-9">
+        <button name="" id="card-button-add-description" class="btn btn-secondary card-button-add-description mt-1 ml-1 float-right" (click)="updateDescriciptionFunc('description', textarea_description.value)">Save</button>
+        <button name="" id="card-button-cancel-description" class="btn btn-secondary card-button-add-description mt-1 ml-1 float-right" (click)="shiftUpdateDescription(false)">Cancel</button>
+      </div>
+    </div>
+    <!-- Bottom Part -->
+    <div id="hr-after-description" class="col-lg-12 col-md-12 col-sm-12 ">
+      <hr class="hr w-100">
+    </div>
+    <form [formGroup]="commentGroup" (ngSubmit)="doAddComment()">
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9">
+          <h5>Add Comment</h5>
+          <div *ngIf="commentError" class="alert-danger alert">
+            <strong>{{commentError}}</strong>
+          </div>
+          <textarea formControlName="comment" (click)="shiftAddComment(true)"  id="text-comment-area" class="textarea  w-100 h-15" placeholder="Write a comment"></textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9" *ngIf="addComment">
+          <button id="card-button-add-comment" name="" class="btn btn-secondary card-button-add-comment mt-1 float-right ml-1">Add</button>
+          <button (click)="shiftAddComment(false)" id="card-button-cancel-comment" name="" class="btn btn-secondary card-button-add-comment mt-1 ml-1 float-right ">Cancel</button>
+        </div>
+      </div>
+   </form>
+    <!-- Comments -->
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <hr class="hr w-100">
+    </div>
+    <div class="row">
+      <div class="col-lg-9 col-md-9 col-sm-9">
+        <h5 class="modal-card-add-comment" id="exampleModalLabel">Comments</h5>
+      </div>
+    </div>
+    <div class="col-lg-12 col-md-12 col-sm-12">
+      <hr class="hr w-100">
+    </div>
+    <div *ngFor="let comment of comments let i = index" [attr.data-index]="i">
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9">
+          <p class="card-comment-user" id="exampleModalLabel"><strong>{{comment.email}}</strong> ({{comment.humanize_time}})</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9 card-comments">
+          <div class="ml-2">{{comment.comment}}</div>
+          <textarea id="InputComment" class="textarea card-comments display-none">{{comment.comment}}</textarea>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-lg-9 col-md-9 col-sm-9">
+          <button id="EditComment" class="float-right ml-2 additional-option-comment display-none link-style btn btn-warning" data-value="id_number">Edit</button>
+          <button *ngIf="comment.owner" data-toggle="modal" (click)="doRemoveComment(comment.id, i)" id="DeleteComment" name="" class="float-right ml-2 additional-option-comment link-style btn btn-danger" data-dismiss="modal">Delete</button>
+          <button name="" id="card-save-button" class="btn btn-secondary card-button-add-description mt-1 float-right display-none">Save</button>
+          <button name="" id="card-cancel-button" class="btn btn-secondary card-button-add-description mr-2 mt-1 float-right display-none">Cancel</button>
+        </div>
+      </div>
+    </div>
+    <div class="left-portion-of-header col-lg-9 col-md-9 col-sm-9">
+    </div>
+    <!-- Too Loop? -->
+  </div>
+</ng-template>
+<ng-template #DueDateModal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Set Due Date</h5>
+      <button type="button" class="close" (click)="closeNestedModal('lg')" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form [formGroup]="updatedCardGroup" (ngSubmit)="setUpPatchValues('due date')">
+      <div class="modal-body">
+        <div *ngIf="dateTimeError" class="alert-danger alert">
+          <strong>{{dateTimeError}}</strong>
+        </div>
+        <div *ngIf="current_due_date_value" class="form-control mb-3">
+          <strong> <label class="pr-2"> Current Due Date:  </label> </strong>
+          <label>   {{current_due_date_value}} </label>
+        </div>
+        
+        <label for="" class="mr-2">Update Due Date</label>
+        <input formControlName="due_date" id="input-due-date" type="datetime-local">
+      </div>
+      <div class="modal-footer">
+        <button id="set-due-date" type="submit" class="btn btn-primary">Set Date</button>
+        <button (click)="setDueDateToNull()" type="button" class="btn btn-primary">Remove Due Date</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #ArchivedModal>
+  <div class="modal-content">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLabel">Archive Card</h5>
+      <button type="button" class="close" (click)="closeNestedModal('lg')" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <form [formGroup]="updatedCardGroup" (ngSubmit)="setUpPatchValues('archive')">
+      <div class="modal-body">
+        <label for="" class="mr-2">Are you sure you want to archive this card?</label>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Yes</button>
+        <button type="button" class="btn btn-primary" (click)="closeNestedModal('lg')">No</button>
+      </div>
+    </form>
+  </div>
+</ng-template>
+<ng-template #ManageMembers>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Assign Members</h5>
+    <button type="button" class="close" (click)="closeNestedModal('lg')">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <div class="modal-body overflow-auto">
+    <div *ngIf="removalError" class="alert-danger alert">
+      {{removalError}}
+    </div>
+    <div *ngFor="let member of members" class="members row">
+      <input *ngIf="member.id" class="mt-1 ml-3" [(ngModel)]="member.Checked" name="remove_member" type="checkbox" value="">
+      <p class="m-0 ml-1 p-0"> {{member.email}} </p>
+    </div>
+  </div>
+  <div class="modal-footer">
+    <button type="submit" (click)="Assignment()" class="btn btn-primary">Assign</button>
+  </div>
+</ng-template>

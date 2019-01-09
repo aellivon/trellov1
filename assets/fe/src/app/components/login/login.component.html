@@ -1,0 +1,26 @@
+
+<div class="container">
+  <div class="row">
+    <div class=" d-flex h-100 col-lg-6 offset-lg-3 col-md-8 offset-md-2 col-sm-12 col-xs-10 offset-xs-2 align-items-center">
+      <form [formGroup]="form" (ngSubmit)="doLogin()">
+        <h2 class="label-margin"> LOG IN TO TRELLO </h2>
+        <p class="label-margin"> or <a uiSref="register">create an account</a></p>
+        <div *ngIf="nonFieldErrors" class="alert alert-danger error_box">
+          <strong>{{ nonFieldErrors }}</strong>
+        </div>
+        <label for="" class="label-margin mt-1">Email</label>
+        <input formControlName="email" name="email" class="form-control d-inline-block mb-2">
+        <div *ngIf="emailFieldErrors" class="alert alert-danger error_box d-inline-block w-100">
+          <strong>{{ emailFieldErrors }}</strong>
+        </div>
+        <label for="" class="label-margin mt-1">Password</label>
+        <input formControlName="password" name="password" type="password" class="form-control d-inline-block mb-2">
+        <div *ngIf="passwordFieldErrors" class="alert alert-danger error_box d-inline-block w-100">
+          <strong>{{ passwordFieldErrors }}</strong>
+        </div>
+        <button  id="sign-up-submit" type="submit" class="btn btn-success">Log In</button>
+      </form>
+    </div>
+  </div>
+</div>
+

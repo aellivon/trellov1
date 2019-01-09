@@ -1,0 +1,85 @@
+<div class="board-content d-flex">
+  <div *ngFor="let column of columns let i = index" [attr.data-index]="i" class="parent-container">
+    <div class="column-content form-control">
+      <div class="btn btn-primary form-control d-flex" (click)="setPatchValues(i, updateColumnModalTemplate, 'update')">
+        <h5 class="title">{{column.name}}</h5>
+        <button type="button" class="close" (click)="setPatchValues(i, archiveColumnModal, 'archive');  $event.stopPropagation();">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <app-cards #card_selector column_id="{{column.id}}" board_id={{board_id}}> </app-cards>
+    </div>
+  </div>
+  <div class="parent-container">
+    <div class="column-content form-control">
+      <div class="div-column-title form-control btn" (click)="openModal(addColumnTemplate)">
+        <h5 clas="title">New Column</h5>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<ng-template #updateColumnModalTemplate>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Update Column Name</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="columnGroup" (ngSubmit)="updateColumnName()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Name</label>
+      <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+      <div *ngIf="columnNameFieldErrors" class="alert-danger alert">
+        {{columnNameFieldErrors}}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Update</button>
+    </div>
+  </form>
+</ng-template>
+
+
+<ng-template #archiveColumnModal>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Archive Column</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="columnGroup" (ngSubmit)="archiveColumn()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Are you sure you want to archive this column?</label>
+
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Yes</button>
+      <button type="button" (click)="closeModal()" class="btn btn-primary">No</button>
+    </div>
+  </form>
+</ng-template>
+
+<ng-template #addColumnTemplate>
+  <div class="modal-header">
+    <h5 class="modal-title" id="exampleModalLabel">Add Column</h5>
+    <button type="button" class="close" (click)="closeModal()">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+  <form [formGroup]="columnGroup" (ngSubmit)="addColumn()">
+    <div class="modal-body">
+      <label class="label-margin mt-1">Name</label>
+      <input formControlName="name" name="name" class="form-control d-inline-block mb-2">
+      <div *ngIf="columnNameFieldErrors" class="alert-danger alert">
+        {{columnNameFieldErrors}}
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button type="submit" class="btn btn-primary">Add</button>
+    </div>
+  </form>
+</ng-template>
+
+

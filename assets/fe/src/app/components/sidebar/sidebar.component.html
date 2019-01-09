@@ -1,0 +1,17 @@
+<div class="sidebar" [ngClass]="{'open': open_sidebar === true}">
+      <div class="container">
+        <p class="title-activity"><strong> Board Activity</strong></p>
+        <a class="close-sidebar" (click)="closeSidebar()">X</a>
+      </div>
+      <div class="sidebar-body">
+        <div *ngFor="let activity of activities">
+            <div class="row activity-content">
+              <strong>{{ activity.humanize_activity }}</strong>
+            </div>
+            <div class="row activity-footer"> 
+              {{ activity.humanize_time }}
+            </div>  
+            <hr>
+          </div>
+      </div>
+    </div>

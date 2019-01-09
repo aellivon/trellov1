@@ -1,0 +1,86 @@
+.board-content{
+    height: 80vh;
+    width: 100%;
+    overflow-x: auto;
+}
+
+.title{
+    margin: auto;
+}
+
+.z-2{
+    z-index: 2;
+}
+
+.div-column-title:hover{
+    background-color: #E8E8E8;
+}
+
+.column-content{
+    max-height: 100%;
+    min-height: 55px;
+    padding-top: 8px;
+    padding-bottom: 8px;
+    width: 250px;
+    background-color: black;
+    margin-left: 10px;
+    margin-right: 10px;
+    margin-top: 20px;
+}
+
+
+.div-column-title{
+    overflow-x: hidden;
+    overflow-y: hidden;
+    width: 100%;
+    background-color: white;
+    height: 40px;
+    padding: 7px;
+    margin: auto;
+    text-align: center;
+}
+
+.card{
+    margin-bottom: 10px;
+    border: 1px solid black;
+}
+
+.div-card-container{
+    width: 100%;
+    background-color: gray;
+    min-height: 0px;
+    max-height: 350px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 7px;
+    text-align: center;
+}
+
+
+/* in-flight clone */
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+  pointer-events: none;
+}
+/* high-performance display:none; helper */
+.gu-hide {
+  left: -9999px !important;
+}
+/* added to mirrorContainer (default = body) while dragging */
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+/* added to the source element while its mirror is dragged */
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
+}

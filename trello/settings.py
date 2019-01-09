@@ -75,7 +75,7 @@ AUTH_USER_MODEL = 'users.User'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, 'templates/')],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -91,6 +91,7 @@ TEMPLATES = [
 WSGI_APPLICATION = 'trello.wsgi.application'
 
 BASE_URL = "http://127.0.0.1:8000"
+VALIDATION_URL = "/validate/"
 # Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
 
@@ -100,6 +101,9 @@ DATABASES = {
         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
+
+
+
 
 
 # Password validation
@@ -143,7 +147,19 @@ USE_L10N = True
 USE_TZ = True
 
 
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
+
+STATICFILES_DIRS = [
+   os.path.join(BASE_DIR, 'assets/'),
+]
+
+try:
+   from .local_settings import *
+except ImportError as e:
+   if "local_setting" not in str(e):
+       raise e
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
-STATIC_URL = '/static/'

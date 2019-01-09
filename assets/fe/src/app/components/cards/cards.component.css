@@ -1,0 +1,120 @@
+.card_overdue{
+    background-color: maroon;
+    color: white;
+}
+
+.card_overdue{
+    
+}
+
+.card-margin{
+    margin-bottom: 10px;
+    border: 1px solid black;
+
+}
+
+.card:hover{
+    background-color: #E8E8E8;
+}
+
+.bg-black{
+    background-color: black;
+}
+
+.bg-gray{
+    background-color: gray;
+}
+
+.div-card-container{
+    width: 100%;
+    min-height: 0px;
+    max-height: 450px;
+    overflow-y: auto;
+    margin-top: 10px;
+    padding: 7px;
+    text-align: center;
+}
+
+.override-modal-header{
+    border: none;
+}
+
+.font-30{
+    font-size: 30px;
+}
+
+.card-details-name{
+    width: 74%;
+}
+
+.textarea {
+  padding: 10px;
+  resize: none;
+  width: 100%;
+  height: 80%;
+  text-indent: 0px;
+}
+
+.no-border{
+  border: 0px;
+  background-color: #e5e5e5;
+}
+
+.card-comments{
+    word-wrap: break-word;
+    overflow-y:auto;
+    max-width: 100%;
+    min-height: 0px;
+    max-height: 100px;
+}
+
+.h-20{
+    height: 20%;
+}
+
+.h-15{
+    height: 15%;
+}
+
+.display-none{
+    display: none;
+}
+
+
+.div-add-card{
+    width: 90%;
+    background-color: white;
+    margin-top: 10px;
+    height: 40px;
+    padding: 7px;
+    margin-left: 5%;
+    text-align: center;
+}
+
+/* in-flight clone */
+.gu-mirror {
+  position: fixed !important;
+  margin: 0 !important;
+  z-index: 9999 !important;
+  opacity: 0.8;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+  filter: alpha(opacity=80);
+  pointer-events: none;
+}
+/* high-performance display:none; helper */
+.gu-hide {
+  left: -9999px !important;
+}
+/* added to mirrorContainer (default = body) while dragging */
+.gu-unselectable {
+  -webkit-user-select: none !important;
+  -moz-user-select: none !important;
+  -ms-user-select: none !important;
+  user-select: none !important;
+}
+/* added to the source element while its mirror is dragged */
+.gu-transit {
+  opacity: 0.2;
+  -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=20)";
+  filter: alpha(opacity=20);
+}
